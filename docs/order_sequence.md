@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
 participant OrderController
 participant OrderService
@@ -73,3 +74,4 @@ else 재고 충분
     DataPlatformService -->> OrderController: 데이터 플랫폼 응답 완료
 
 end
+```
