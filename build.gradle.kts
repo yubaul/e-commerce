@@ -10,7 +10,7 @@ fun getGitHash(): String {
 	}.standardOutput.asText.get().trim()
 }
 
-group = "kr.hhplus.be"
+group = "kr.baul"
 version = getGitHash()
 
 java {
