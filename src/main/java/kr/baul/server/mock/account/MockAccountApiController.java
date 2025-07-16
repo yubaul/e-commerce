@@ -1,0 +1,46 @@
+package kr.baul.server.mock.account;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import kr.baul.server.response.CommonResponse;
+import org.springframework.web.bind.annotation.*;
+
+@Tag(name = "MockAccount", description = "계좌 Mock API (잔액 충전 / 조회)")
+@RequestMapping("/api/v1/mock/accounts")
+@RestController
+public class MockAccountApiController {
+
+    @Operation(summary = "계좌 잔액 충전 API", description = "userId를 통해 계좌에 금액을 충전합니다.")
+    @ApiResponse(responseCode = "200", description = "잔액 충전 성공")
+    @PostMapping("/charge")
+    public CommonResponse charge(@RequestBody MockAccountChargeRequest request){
+        return CommonResponse.success();
+    }
+
+    @Operation(summary = "계좌 잔액 조회 API", description = "userId를 통해 사용자 계좌 잔액을 조회한다.")
+    @GetMapping("/{userId}")
+    @ApiResponse(responseCode = "200", description = "계좌 잔액 조회 성공")
+    public CommonResponse retrieveAccount(
+            @Parameter(
+                    name = "userId",
+                    description = "사용자 ID",
+                    required = true,
+                    example = "1"
+            )
+            @PathVariable Long userId
+    ){
+        var result = MockRetrieveAccount.dummy();
+        return CommonResponse.success(result);
+    }
+
+    record MockRetrieveAccount(Long balance){
+        public static MockRetrieveAccount dummy(){
+            return new MockRetrieveAccount(10_000L);
+        }
+
+    }
+
+
+}
