@@ -33,7 +33,7 @@ public class MockItemController {
         return CommonResponse.success(result);
     }
 
-    record MockItem(long id,
+    public record MockItem(long id,
                     String name,
                     long price,
                     long quantity
@@ -50,7 +50,7 @@ public class MockItemController {
         return CommonResponse.success(result);
     }
 
-    record MockTopSellingItem(long ranking,
+    public record MockTopSellingItem(long ranking,
                               long id, String name,
                               long price,
                               long totalSold
@@ -58,7 +58,7 @@ public class MockItemController {
 
     }
 
-    record MockTopSellingItemList(List<MockTopSellingItem> itemList){
+    public record MockTopSellingItemList(List<MockTopSellingItem> itemList){
         public static MockTopSellingItemList dummy(){
             List<MockTopSellingItem> itemList = new ArrayList<>();
             var dummy1 = new MockTopSellingItem(1L, 100L, "제습기", 223_000L, 60L);
