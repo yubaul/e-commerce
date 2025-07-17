@@ -16,7 +16,8 @@ public class MockAccountApiController {
     @ApiResponse(responseCode = "200", description = "잔액 충전 성공")
     @PostMapping("/charge")
     public CommonResponse charge(@RequestBody MockAccountChargeRequest request){
-        return CommonResponse.success();
+        var result = MockChargeBalance.dummy();
+        return CommonResponse.success(result);
     }
 
     @Operation(summary = "계좌 잔액 조회 API", description = "userId를 통해 사용자 계좌 잔액을 조회한다.")
@@ -33,6 +34,12 @@ public class MockAccountApiController {
     ){
         var result = MockRetrieveAccount.dummy();
         return CommonResponse.success(result);
+    }
+
+    record MockChargeBalance(Long balance){
+        public static MockChargeBalance dummy(){
+            return new MockChargeBalance(20_000L);
+        }
     }
 
     record MockRetrieveAccount(Long balance){
