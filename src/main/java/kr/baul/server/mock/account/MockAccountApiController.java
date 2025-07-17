@@ -35,7 +35,7 @@ public class MockAccountApiController {
         private Long amount;
     }
 
-    record MockChargeBalance(Long balance){
+    public record MockChargeBalance(Long balance){
         public static MockChargeBalance dummy(){
             return new MockChargeBalance(20_000L);
         }
@@ -53,14 +53,14 @@ public class MockAccountApiController {
             )
             @PathVariable Long userId
     ){
-        var result = MockRetrieveAccount.dummy();
+        var result = MockAccount.dummy();
         return CommonResponse.success(result);
     }
 
 
-    record MockRetrieveAccount(Long balance){
-        public static MockRetrieveAccount dummy(){
-            return new MockRetrieveAccount(10_000L);
+    public record MockAccount(Long balance){
+        public static MockAccount dummy(){
+            return new MockAccount(10_000L);
         }
 
     }
