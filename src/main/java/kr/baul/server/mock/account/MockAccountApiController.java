@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.baul.server.response.CommonResponse;
+import kr.baul.server.common.jpa.response.CommonResponse;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package kr.baul.server.response;
+package kr.baul.server.common.jpa.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
