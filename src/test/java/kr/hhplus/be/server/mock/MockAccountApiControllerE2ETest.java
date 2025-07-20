@@ -4,7 +4,7 @@ import kr.baul.server.ServerApplication;
 import static kr.baul.server.mock.account.MockAccountApiController.MockAccountChargeRequest;
 
 import static kr.baul.server.mock.account.MockAccountApiController.*;
-import kr.baul.server.common.jpa.response.CommonResponse;
+import kr.baul.server.common.response.CommonResponse;
 import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

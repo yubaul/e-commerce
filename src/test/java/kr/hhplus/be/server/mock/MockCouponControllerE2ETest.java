@@ -4,7 +4,7 @@ import kr.baul.server.ServerApplication;
 import kr.baul.server.mock.coupon.MockCouponController.MockCoupon;
 import kr.baul.server.mock.coupon.MockCouponController.MockCouponList;
 import kr.baul.server.mock.coupon.MockCouponController.MockIssueCouponRequest;
-import kr.baul.server.common.jpa.response.CommonResponse;
+import kr.baul.server.common.response.CommonResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
