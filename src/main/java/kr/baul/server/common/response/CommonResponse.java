@@ -1,5 +1,6 @@
 package kr.baul.server.common.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,35 +12,34 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CommonResponse<T> {
 
-    private Result result;
-    private T data;
+    private String code;
     private String message;
-
-    public static <T> CommonResponse<T> success(T data, String message) {
-        return (CommonResponse<T>) CommonResponse.builder()
-                .result(Result.SUCCESS)
-                .data(data)
-                .message(message)
-                .build();
-    }
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private T data;
 
     public static <T> CommonResponse<T> success(T data) {
-        return success(data, null);
+        return (CommonResponse<T>) CommonResponse.builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .data(data)
+                .message(ResponseCode.SUCCESS.getMessage())
+                .build();
     }
 
     public static CommonResponse success(){
-        return success("ok", null);
+        return success(null);
     }
 
-    public static CommonResponse fail(String message) {
+    public static CommonResponse fail(String code, String message) {
         return CommonResponse.builder()
-                .result(Result.FAIL)
+                .code(code)
                 .message(message)
                 .build();
     }
 
-
-    public enum Result {
-        SUCCESS, FAIL
+    public static CommonResponse fail(ResponseCode errorCode) {
+        return CommonResponse.builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build();
     }
 }

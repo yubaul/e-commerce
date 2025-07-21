@@ -6,6 +6,8 @@ import static kr.baul.server.mock.account.MockAccountApiController.MockAccountCh
 import static kr.baul.server.mock.account.MockAccountApiController.*;
 import kr.baul.server.common.response.CommonResponse;
 import static org.assertj.core.api.Assertions.*;
+
+import kr.baul.server.common.response.ResponseCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,7 +41,7 @@ public class MockAccountApiControllerE2ETest  {
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getResult()).isEqualTo(CommonResponse.Result.SUCCESS);
+        assertThat(response.getBody().getCode()).isEqualTo(ResponseCode.SUCCESS.getCode());
         assertThat(response.getBody().getData().balance()).isEqualTo(MockAccount.dummy().balance());
 
     }
@@ -65,7 +67,7 @@ public class MockAccountApiControllerE2ETest  {
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getResult()).isEqualTo(CommonResponse.Result.SUCCESS);
+        assertThat(response.getBody().getCode()).isEqualTo(ResponseCode.SUCCESS.getCode());
         assertThat(response.getBody().getData().balance()).isEqualTo(MockChargeBalance.dummy().balance());
     }
 }

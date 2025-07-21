@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.mock;
 
 import kr.baul.server.ServerApplication;
+import kr.baul.server.common.response.ResponseCode;
 import kr.baul.server.mock.coupon.MockCouponController.MockCoupon;
 import kr.baul.server.mock.coupon.MockCouponController.MockCouponList;
 import kr.baul.server.mock.coupon.MockCouponController.MockIssueCouponRequest;
@@ -42,7 +43,7 @@ public class MockCouponControllerE2ETest {
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getResult()).isEqualTo(CommonResponse.Result.SUCCESS);
+        assertThat(response.getBody().getCode()).isEqualTo(ResponseCode.SUCCESS.getCode());
         assertThat(response.getBody().getData().name()).isEqualTo(MockCoupon.dummy().name());
     }
 
@@ -62,7 +63,7 @@ public class MockCouponControllerE2ETest {
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getResult()).isEqualTo(CommonResponse.Result.SUCCESS);
+        assertThat(response.getBody().getCode()).isEqualTo(ResponseCode.SUCCESS.getCode());
         assertThat(response.getBody().getData().coupons().get(0).name())
                 .isEqualTo(MockCouponList.dummy().coupons().get(0).name());
     }
