@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 public class Account {
 
+    private Long id;
 
     private Long userId;
 
@@ -22,9 +23,12 @@ public class Account {
     LocalDateTime createdAt;
 
     @Builder
-    public Account(Long userId,
-                   Long balance
+    public Account(
+            Long id,
+            Long userId,
+            Long balance
     ) {
+        this.id = id;
         this.userId = userId;
         this.balance = balance;
         this.createdAt = LocalDateTime.now();

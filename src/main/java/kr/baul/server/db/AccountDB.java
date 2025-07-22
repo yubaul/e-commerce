@@ -16,7 +16,8 @@ public class AccountDB {
 
     @PostConstruct
     public void init(){
-        var account = Account.builder()
+        Account account = Account.builder()
+                .id(1L)
                 .userId(1L)
                 .balance(0L)
                 .build();

@@ -9,6 +9,7 @@ import kr.baul.server.common.exception.EntityNotFoundException;
 import kr.baul.server.domain.account.Account;
 import kr.baul.server.domain.account.AccountReader;
 import kr.baul.server.domain.account.AccountStore;
+import kr.baul.server.domain.account.accounthistory.AccountHistoryStore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,6 +27,9 @@ public class AccountServiceUnitTest {
 
     @Mock
     AccountStore accountStore;
+
+    @Mock
+    AccountHistoryStore accountHistoryStore;
 
 
     @Test
