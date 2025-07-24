@@ -1,5 +1,6 @@
 package kr.baul.server.domain.account;
 
+import kr.baul.server.common.exception.InsufficientBalanceException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,6 +37,13 @@ public class Account {
 
     public Long charge(Long amount){
         return balance += amount;
+    }
+
+    public Long use(Long amount){
+        if(balance < amount){
+            throw new InsufficientBalanceException();
+        }
+        return balance -= amount;
     }
 
 

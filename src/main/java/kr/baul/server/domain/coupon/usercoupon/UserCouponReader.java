@@ -8,4 +8,5 @@ public interface UserCouponReader {
 
     List<UserCoupon> getUserCoupons(Long userId);
 
+    UserCoupon getUserCoupon(Long couponId, Long userId);
 }

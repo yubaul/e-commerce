@@ -32,7 +32,7 @@ public class CouponService {
         }
 
         Coupon coupon = couponReader.getCoupon(couponId);
-        coupon.useOne();
+        coupon.issue();
 
         couponStore.store(coupon);
         userCouponStore.store(coupon, userId);

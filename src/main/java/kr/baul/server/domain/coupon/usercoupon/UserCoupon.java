@@ -1,5 +1,6 @@
 package kr.baul.server.domain.coupon.usercoupon;
 
+import kr.baul.server.common.exception.CouponAlreadyUsedException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,5 +27,13 @@ public class UserCoupon {
         this.userId = userId;
         this.couponId = couponId;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public void use(){
+        if (used) {
+            throw new CouponAlreadyUsedException("이미 사용된 쿠폰입니다. userCouponId = " + id);
+        }
+        this.used = true;
+        this.usedAt = LocalDateTime.now();
     }
 }

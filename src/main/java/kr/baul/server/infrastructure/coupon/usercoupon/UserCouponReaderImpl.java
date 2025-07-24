@@ -1,5 +1,6 @@
 package kr.baul.server.infrastructure.coupon.usercoupon;
 
+import kr.baul.server.common.exception.EntityNotFoundException;
 import kr.baul.server.db.UserCouponDB;
 import kr.baul.server.domain.coupon.usercoupon.UserCoupon;
 import kr.baul.server.domain.coupon.usercoupon.UserCouponReader;
@@ -28,5 +29,11 @@ public class UserCouponReaderImpl implements UserCouponReader {
     public List<UserCoupon> getUserCoupons(Long userId) {
         return couponDB.selectByUserId(userId)
                 .orElse(Collections.emptyList());
+    }
+
+    @Override
+    public UserCoupon getUserCoupon(Long couponId, Long userId) {
+        return couponDB.selectByUserIdAndCouponId(couponId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("보유 쿠폰 목록에 쿠폰이 존재하지 않습니다."));
     }
 }

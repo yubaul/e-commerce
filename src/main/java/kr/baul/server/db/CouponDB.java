@@ -19,6 +19,7 @@ public class CouponDB {
     public void init(){
         Coupon coupon1 = Coupon.builder()
                 .id(1L)
+                .itemId(1L)
                 .name("질레트 한정 면도날 할인 쿠폰")
                 .discountAmount(10_000L)
                 .validFrom(LocalDate.now())
@@ -27,6 +28,7 @@ public class CouponDB {
                 .build();
         Coupon coupon2 = Coupon.builder()
                 .id(2L)
+                .itemId(2L)
                 .name("선착순 할인 쿠폰")
                 .discountAmount(30_000L)
                 .validFrom(LocalDate.now())
@@ -39,9 +41,9 @@ public class CouponDB {
 
 
 
-    public Optional<Coupon> selectById(Long userId) {
+    public Optional<Coupon> selectById(Long couponId) {
         throttle(200);
-        return Optional.ofNullable(table.get(userId));
+        return Optional.ofNullable(table.get(couponId));
     }
 
     public Coupon insert(Coupon coupon) {
