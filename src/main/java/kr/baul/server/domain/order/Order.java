@@ -44,4 +44,8 @@ public class Order {
         this.totalAmount = totalAmount;
     }
 
+    public void setOrderStatus(OrderStatus orderStatus){
+        this.orderStatus = orderStatus;
+    }
+
 }

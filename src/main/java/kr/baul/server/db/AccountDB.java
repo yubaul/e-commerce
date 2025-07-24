@@ -19,7 +19,7 @@ public class AccountDB {
         Account account = Account.builder()
                 .id(1L)
                 .userId(1L)
-                .balance(100_000L)
+                .balance(20_000L)
                 .build();
         table.put(account.getUserId(), account);
     }

@@ -46,6 +46,7 @@ public class UserCouponDB {
         return userCoupon;
     }
 
+
     public static long getAtomicInteger(){
         return integer.getAndIncrement();
     }

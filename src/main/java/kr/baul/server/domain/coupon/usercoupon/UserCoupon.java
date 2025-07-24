@@ -21,11 +21,13 @@ public class UserCoupon {
     public UserCoupon(
             Long id,
             Long userId,
-            Long couponId
+            Long couponId,
+            boolean used
     ){
         this.id = id;
         this.userId = userId;
         this.couponId = couponId;
+        this.used = used;
         this.createdAt = LocalDateTime.now();
     }
 
@@ -35,5 +37,9 @@ public class UserCoupon {
         }
         this.used = true;
         this.usedAt = LocalDateTime.now();
+    }
+
+    public void restore(){
+        this.used = false;
     }
 }

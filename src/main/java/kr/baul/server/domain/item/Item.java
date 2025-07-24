@@ -46,4 +46,8 @@ public class Item {
         return String.format("상품 ID: %d, 요청 수량: %d → 현재 재고: %d (부족)", this.id, amount, this.quantity);
     }
 
+    public void increaseQuantity(int quantity) {
+        this.quantity += quantity;
+    }
+
 }

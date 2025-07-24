@@ -26,10 +26,17 @@ public class ItemDB {
         table.put(item.getId(), item);
     }
 
+    public Item insert(Item item){
+        throttle(300);
+        table.put(item.getId(), item);
+        return item;
+    }
+
     public Optional<Item> selectById(Long itemId) {
         throttle(200);
         return Optional.ofNullable(table.get(itemId));
     }
+
     private void throttle(long millis) {
         try {
             TimeUnit.MILLISECONDS.sleep((long) (Math.random() * millis));

@@ -18,7 +18,8 @@ public enum ResponseCode{
     OUT_OF_STOCK("90003", "재고가 부족합니다."),
     COUPON_ALREADY_USED("90004", "이미 사용된 쿠폰입니다"),
     COUPON_DISABLED("90005", "사용이 중지된 쿠폰입니다."),
-    INSUFFICIENT_BALANCE("90006", "계좌 잔액이 부족합니다.");
+    INSUFFICIENT_BALANCE("90006", "계좌 잔액이 부족합니다."),
+    PAYMENT_FAILED("90007", "결제에 실패하였습니다. 다시 시도해주세요.");
 
     private final String code;
 

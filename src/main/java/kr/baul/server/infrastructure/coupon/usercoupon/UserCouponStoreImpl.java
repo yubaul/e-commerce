@@ -22,4 +22,9 @@ public class UserCouponStoreImpl implements UserCouponStore {
                 .build();
         return userCouponDB.insert(userCoupon);
     }
+
+    @Override
+    public UserCoupon store(UserCoupon userCoupon) {
+        return userCouponDB.insert(userCoupon);
+    }
 }
