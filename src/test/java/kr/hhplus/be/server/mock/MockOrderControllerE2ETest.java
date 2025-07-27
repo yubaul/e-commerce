@@ -1,10 +1,11 @@
 package kr.hhplus.be.server.mock;
 
 import kr.baul.server.ServerApplication;
+import kr.baul.server.common.response.ResponseCode;
 import kr.baul.server.mock.order.MockOrderController.MockOrderRequest;
 import kr.baul.server.mock.order.MockOrderController.MockOrderRequest.MockOrderItem;
 import kr.baul.server.mock.order.MockOrderController.MockOrderResult;
-import kr.baul.server.response.CommonResponse;
+import kr.baul.server.common.response.CommonResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,7 +53,7 @@ public class MockOrderControllerE2ETest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         CommonResponse<MockOrderResult> body = response.getBody();
         assertThat(body).isNotNull();
-        assertThat(body.getResult()).isEqualTo(CommonResponse.Result.SUCCESS);
+        assertThat(body.getCode()).isEqualTo(ResponseCode.SUCCESS.getCode());
         assertThat(body.getData().orderId()).isEqualTo(MockOrderResult.dummy().orderId());
         assertThat(body.getData().status()).isEqualTo(MockOrderResult.dummy().status());
     }

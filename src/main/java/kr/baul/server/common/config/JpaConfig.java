@@ -1,4 +1,4 @@
-package kr.baul.server.config.jpa;
+package kr.baul.server.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

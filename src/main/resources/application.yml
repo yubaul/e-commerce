@@ -36,6 +36,7 @@ server:
 springdoc:
   api-docs:
     enabled: true
+    version: openapi_3_0
   swagger-ui:
     enabled: true
     path: /swagger-ui.html

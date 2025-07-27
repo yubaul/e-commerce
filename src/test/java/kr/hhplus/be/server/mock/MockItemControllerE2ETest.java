@@ -1,9 +1,10 @@
 package kr.hhplus.be.server.mock;
 
 import kr.baul.server.ServerApplication;
+import kr.baul.server.common.response.ResponseCode;
 import kr.baul.server.mock.item.MockItemController.MockItem;
 import kr.baul.server.mock.item.MockItemController.MockTopSellingItemList;
-import kr.baul.server.response.CommonResponse;
+import kr.baul.server.common.response.CommonResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,7 +37,7 @@ public class MockItemControllerE2ETest {
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getResult()).isEqualTo(CommonResponse.Result.SUCCESS);
+        assertThat(response.getBody().getCode()).isEqualTo(ResponseCode.SUCCESS.getCode());
         assertThat(response.getBody().getData().name()).isEqualTo(MockItem.dummy().name());
     }
 
@@ -55,7 +56,7 @@ public class MockItemControllerE2ETest {
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getResult()).isEqualTo(CommonResponse.Result.SUCCESS);
+        assertThat(response.getBody().getCode()).isEqualTo(ResponseCode.SUCCESS.getCode());
         assertThat(response.getBody().getData().itemList()).hasSize(5);
         assertThat(response.getBody().getData().itemList().get(0).name())
                 .isEqualTo(response.getBody().getData().itemList().get(0).name());
