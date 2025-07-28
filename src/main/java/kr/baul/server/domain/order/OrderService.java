@@ -47,7 +47,7 @@ public class OrderService {
             throw new PaymentFailedException();
         }
 
-        return orderInfoMapper.toInfo(order);
+        return orderInfoMapper.of(order);
     }
 
     private void restoreUsedCoupons(Long userId, List<OrderCommand.RegisterOrder.OrderItem> items) {

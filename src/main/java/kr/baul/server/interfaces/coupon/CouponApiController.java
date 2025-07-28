@@ -8,6 +8,8 @@ import kr.baul.server.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Coupon API", description = "쿠폰 API (선착순 쿠폰 발급 / 보유 쿠폰 목록 조회)")
 @RequestMapping("/api/v1/coupon")
 @RestController
@@ -26,7 +28,7 @@ public class CouponApiController {
 
     @Operation(summary = "보유 쿠폰 목록 조회 API", description = "userId를 통해 사용자의 보유 쿠폰 목록을 조회합니다.")
     @GetMapping("/{userId}")
-    public CommonResponse getUserCoupons(
+    public CommonResponse<List<CouponDto.UserCoupon>> getUserCoupons(
             @Parameter(name = "userId", description = "사용자 ID", required = true, example = "1")
             @PathVariable Long userId
     ) {

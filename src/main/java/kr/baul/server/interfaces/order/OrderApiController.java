@@ -23,7 +23,7 @@ public class OrderApiController {
     @Operation(summary = "주문/결제 API", description = "사용자 ID와 상품 ID/수량 목록으로 주문 및 결제를 수행합니다.")
     @PostMapping
     public CommonResponse order(@RequestBody OrderDto.RegisterOrderRequest request) {
-        var command = orderDtoMapper.toCommand(request);
+        var command = orderDtoMapper.of(request);
         orderFacade.registerOrder(command);
         return CommonResponse.success();
     }

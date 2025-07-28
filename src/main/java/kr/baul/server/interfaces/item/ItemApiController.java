@@ -18,10 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ItemApiController {
 
     private final ItemService itemService;
+    private final ItemDtoMapper itemDtoMapper;
 
     @Operation(summary = "단일 상품 조회 API", description = "itemId를 통해 단일 상품을 조회합니다.")
     @GetMapping("/{itemId}")
-    public CommonResponse getItem(
+    public CommonResponse<ItemDto.ItemResponse> getItem(
             @Parameter(
                     name = "itemId",
                     description = "상품 ID",
@@ -31,7 +32,7 @@ public class ItemApiController {
             @PathVariable Long itemId
     ){
         var result = itemService.getItem(itemId);
-        var response = ItemDto.ItemResponse.createResponse(result);
+        var response = itemDtoMapper.toResponse(result);
         return CommonResponse.success(response);
     }
 

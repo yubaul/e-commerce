@@ -81,7 +81,7 @@ class OrderServiceUnitTest {
 
         when(orderFactory.store(userId, orderItems)).thenReturn(dummyOrder);
         when(accountReader.getAccount(userId)).thenReturn(dummyAccount);
-        when(orderInfoMapper.toInfo(dummyOrder)).thenReturn(dummyOrderInfo);
+        when(orderInfoMapper.of(dummyOrder)).thenReturn(dummyOrderInfo);
 
         // when
         OrderInfo.Order result = orderService.registerOrder(registerOrder);
@@ -95,7 +95,7 @@ class OrderServiceUnitTest {
         verify(paymentProcessor).process(dummyAccount, dummyOrder);
         verify(orderFactory).store(userId, orderItems);
         verify(accountReader).getAccount(userId);
-        verify(orderInfoMapper).toInfo(dummyOrder);
+        verify(orderInfoMapper).of(dummyOrder);
     }
 
     @Test
@@ -136,7 +136,7 @@ class OrderServiceUnitTest {
         RegisterOrder registerOrder = new RegisterOrder(userId, orderItems);
         String message = "사용이 중지된 쿠폰입니다. couponId = " + 101L;
 
-        doThrow(new CouponDisabledException(message)).when(itemStockProcessor).deduct(orderItems);
+        doThrow(new CouponDisabledException(message)).when(orderFactory).store(userId, orderItems);
 
         // when & then
         assertThatThrownBy(() -> orderService.registerOrder(registerOrder))
@@ -164,11 +164,11 @@ class OrderServiceUnitTest {
 
         when(orderFactory.store(userId, orderItems)).thenReturn(dummyOrder);
         when(accountReader.getAccount(userId)).thenReturn(dummyAccount);
-        doThrow(new InsufficientBalanceException()).when(paymentProcessor).process(dummyAccount, dummyOrder);
+        doThrow(new PaymentFailedException()).when(paymentProcessor).process(dummyAccount, dummyOrder);
 
         // when & then
         assertThatThrownBy(() -> orderService.registerOrder(registerOrder))
-                .isInstanceOf(InsufficientBalanceException.class);
+                .isInstanceOf(PaymentFailedException.class);
     }
 
     @Test

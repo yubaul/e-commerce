@@ -19,9 +19,9 @@ public class AccountService {
     private final AccountHistoryStore accountHistoryStore;
 
 
-    public Long charge(AccountChargeRequest request){
-        var amount = request.getAmount();
-        Account account = accountReader.getAccount(request.getUserId());
+    public Long charge(AccountCommand.AccountCharge command){
+        var amount = command.amount();
+        Account account = accountReader.getAccount(command.userId());
         account.charge(amount);
 
         accountStore.store(account);

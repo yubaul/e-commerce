@@ -1,6 +1,6 @@
-package kr.baul.server.domain.order.orderinfo;
+package kr.baul.server.interfaces.account;
 
-import kr.baul.server.domain.order.Order;
+import kr.baul.server.application.account.AccountCommand;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -10,6 +10,7 @@ import org.mapstruct.ReportingPolicy;
         injectionStrategy = InjectionStrategy.CONSTRUCTOR,
         unmappedTargetPolicy = ReportingPolicy.ERROR
 )
-public interface OrderInfoMapper {
-    OrderInfo.Order of(Order order);
+public interface AccountDtoMapper {
+
+    AccountCommand.AccountCharge of(AccountDto.AccountChargeRequest request);
 }

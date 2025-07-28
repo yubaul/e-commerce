@@ -13,8 +13,8 @@ import org.mapstruct.ReportingPolicy;
 public interface OrderDtoMapper {
 
 
-    OrderCommand.RegisterOrder toCommand(OrderDto.RegisterOrderRequest request);
+    OrderCommand.RegisterOrder of(OrderDto.RegisterOrderRequest request);
 
-    OrderCommand.RegisterOrder.OrderItem toCommand(OrderDto.RegisterOrderRequest.OrderItem item);
+    OrderCommand.RegisterOrder.OrderItem of(OrderDto.RegisterOrderRequest.OrderItem item);
 
 }

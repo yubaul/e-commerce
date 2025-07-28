@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.*;
 public class AccountApiController {
 
     private final AccountService accountService;
+    private final AccountDtoMapper accountDtoMapper;
 
     @Operation(summary = "계좌 잔액 충전 API", description = "userId를 통해 계좌에 금액을 충전합니다.")
     @PostMapping("/charge")
-    public CommonResponse charge(@RequestBody @Valid AccountChargeRequest request){
-        var result = accountService.charge(request);
+    public CommonResponse<AccountDto.AccountChargeResponse> charge(@RequestBody @Valid AccountChargeRequest request){
+        var command = accountDtoMapper.of(request);
+        var result = accountService.charge(command);
         var response = new AccountChargeResponse(result);
         return CommonResponse.success(response);
     }
@@ -30,7 +32,7 @@ public class AccountApiController {
 
     @Operation(summary = "계좌 잔액 조회 API", description = "userId를 통해 사용자 계좌 잔액을 조회한다.")
     @GetMapping("/{userId}")
-    public CommonResponse getAccountBalance(
+    public CommonResponse<AccountDto.AccountBalanceResponse> getAccountBalance(
             @Parameter(
                     name = "userId",
                     description = "사용자 ID",

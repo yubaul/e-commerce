@@ -4,6 +4,7 @@ import static kr.baul.server.interfaces.account.AccountDto.*;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 
+import kr.baul.server.application.account.AccountCommand;
 import kr.baul.server.application.account.AccountService;
 import kr.baul.server.common.exception.EntityNotFoundException;
 import kr.baul.server.domain.account.Account;
@@ -37,9 +38,10 @@ public class AccountServiceUnitTest {
         // given
         Long userId = 1L;
         Long amount = 50_000L;
-        AccountChargeRequest request = new AccountChargeRequest();
-        request.setUserId(userId);
-        request.setAmount(amount);
+        AccountCommand.AccountCharge command = AccountCommand.AccountCharge.builder()
+                .userId(userId)
+                .amount(amount)
+                .build();
 
         Account account = Account.builder()
                 .userId(1L)
@@ -51,7 +53,7 @@ public class AccountServiceUnitTest {
         when(accountStore.store(account)).thenReturn(account);
 
         // when
-        Long balance = accountService.charge(request);
+        Long balance = accountService.charge(command);
 
         // then
         assertThat(balance).isEqualTo(amount);
@@ -62,15 +64,16 @@ public class AccountServiceUnitTest {
         // given
         Long userId = 1L;
         Long amount = 10_000L;
-        AccountChargeRequest request = new AccountChargeRequest();
-        request.setUserId(userId);
-        request.setAmount(amount);
+        AccountCommand.AccountCharge command = AccountCommand.AccountCharge.builder()
+                .userId(userId)
+                .amount(amount)
+                .build();
 
         when(accountReader.getAccount(userId))
                 .thenThrow(new EntityNotFoundException("해당 사용자에게 등록된 계좌가 없습니다."));
 
         // when & then
-        assertThatThrownBy(() -> accountService.charge(request))
+        assertThatThrownBy(() -> accountService.charge(command))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("해당 사용자에게 등록된 계좌가 없습니다.");
     }
