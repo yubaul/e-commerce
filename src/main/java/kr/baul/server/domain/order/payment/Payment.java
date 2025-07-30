@@ -1,19 +1,32 @@
 package kr.baul.server.domain.order.payment;
 
+import jakarta.persistence.*;
+import kr.baul.server.common.jpa.AbstractEntity;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Getter
-public class Payment {
+@Entity
+@NoArgsConstructor
+@Table(name = "payment")
+public class Payment extends AbstractEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "order_id")
     private Long orderId;
-    private Long accountHistoryId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "pay_method")
     private PayMethod payMethod;
+
+    @Column(name = "pay_amount")
     private Long payAmount;
-    private LocalDateTime createdAt;
+
 
     @Getter
     @RequiredArgsConstructor
@@ -30,8 +43,7 @@ public class Payment {
         Long id,
         Long orderId,
         PayMethod payMethod,
-        Long payAmount,
-        Long accountHistoryId
+        Long payAmount
     ){
         this.id = id;
         this.orderId = orderId;

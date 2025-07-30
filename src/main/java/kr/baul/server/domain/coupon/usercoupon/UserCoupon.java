@@ -1,6 +1,8 @@
 package kr.baul.server.domain.coupon.usercoupon;
 
+import jakarta.persistence.*;
 import kr.baul.server.common.exception.CouponAlreadyUsedException;
+import kr.baul.server.common.jpa.AbstractEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,13 +11,24 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-public class UserCoupon {
+@Entity
+@Table(name = "user_coupon")
+public class UserCoupon extends AbstractEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "user_id")
     private Long userId;
+
+    @Column(name = "coupon_id")
     private Long couponId;
+
     private boolean used;
+
+    @Column(name = "used_at")
     private LocalDateTime usedAt;
-    private LocalDateTime createdAt;
 
     @Builder
     public UserCoupon(
@@ -28,7 +41,6 @@ public class UserCoupon {
         this.userId = userId;
         this.couponId = couponId;
         this.used = used;
-        this.createdAt = LocalDateTime.now();
     }
 
     public void use(){
@@ -39,7 +51,4 @@ public class UserCoupon {
         this.usedAt = LocalDateTime.now();
     }
 
-    public void restore(){
-        this.used = false;
-    }
 }

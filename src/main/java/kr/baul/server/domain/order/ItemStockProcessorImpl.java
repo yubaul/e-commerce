@@ -22,13 +22,4 @@ public class ItemStockProcessorImpl implements ItemStockProcessor {
             itemStore.store(getItem);
         }
     }
-
-    @Override
-    public void restore(List<OrderCommand.RegisterOrder.OrderItem> orderItems) {
-        for (OrderCommand.RegisterOrder.OrderItem item : orderItems) {
-            Item getItem = itemReader.getItem(item.itemId());
-            getItem.increaseQuantity(item.quantity());
-            itemStore.store(getItem);
-        }
-    }
 }

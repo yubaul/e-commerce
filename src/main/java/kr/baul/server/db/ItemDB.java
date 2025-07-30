@@ -20,7 +20,6 @@ public class ItemDB {
                 .id(1L)
                 .name("질레트 면도기")
                 .price(23_000L)
-                .quantity(10)
                 .build();
 
         table.put(item.getId(), item);

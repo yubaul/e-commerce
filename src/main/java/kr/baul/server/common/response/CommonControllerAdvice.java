@@ -23,6 +23,7 @@ public class CommonControllerAdvice {
     @ExceptionHandler(value = Exception.class)
     public CommonResponse onException(Exception e) {
         log.error("[SYSTEM_ERROR] cause = {},  errorMsg = {}", e.getCause(), e.getMessage());
+        e.printStackTrace();
         return CommonResponse.fail(ResponseCode.SYSTEM_ERROR);
     }
 

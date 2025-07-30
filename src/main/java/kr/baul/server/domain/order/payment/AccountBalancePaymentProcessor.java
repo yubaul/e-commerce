@@ -17,14 +17,15 @@ public class AccountBalancePaymentProcessor implements PaymentProcessor {
     @Override
     public void process(Account account, Order order) {
         account.use(order.getTotalAmount());
-
-        AccountHistory accountHistory = accountHistoryStore.store(
+        Payment payment = paymentStore.store(order.getId(), Payment.PayMethod.ACCOUNT, order.getTotalAmount());
+        accountHistoryStore.store(
                 account,
                 order.getTotalAmount(),
                 AccountHistory.TransactionType.USE,
-                AccountHistory.SourceType.PAY
+                AccountHistory.SourceType.PAY,
+                payment.getId()
         );
 
-        paymentStore.store(order.getId(), accountHistory.getId(), Payment.PayMethod.ACCOUNT, order.getTotalAmount());
+
     }
 }
