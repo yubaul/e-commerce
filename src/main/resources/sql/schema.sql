@@ -14,7 +14,8 @@ CREATE TABLE account_history (
     transaction_type VARCHAR(20) NOT NULL,
     source_type VARCHAR(20) NOT NULL,
     payment_id BIGINT,
-    created_at DATETIME NOT NULL
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME
 );
 
 DROP TABLE IF EXISTS accounts;
@@ -33,7 +34,8 @@ CREATE TABLE orders (
     user_id BIGINT,
     total_amount INT NOT NULL,
     order_status VARCHAR(20) NOT NULL,
-    created_at DATETIME NOT NULL
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME
 );
 
 DROP TABLE IF EXISTS order_items;
@@ -43,7 +45,8 @@ CREATE TABLE order_items (
     item_id BIGINT,
     quantity INT NOT NULL,
     item_price_at_order INT NOT NULL,
-    created_at DATETIME NOT NULL
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME
 );
 
 DROP TABLE IF EXISTS items;
@@ -51,13 +54,16 @@ CREATE TABLE items (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     price INT NOT NULL,
-    created_at DATETIME NOT NULL
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NULL
 );
 
 DROP TABLE IF EXISTS item_stock;
 CREATE TABLE item_stock (
     item_id BIGINT PRIMARY KEY,
-    quantity INT NOT NULL
+    quantity INT NOT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NULL
 );
 
 DROP TABLE IF EXISTS payment;
@@ -66,7 +72,8 @@ CREATE TABLE payment (
     order_id BIGINT,
     pay_method VARCHAR(20) NOT NULL,
     pay_amount INT NOT NULL,
-    created_at DATETIME NOT NULL
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME
 );
 
 DROP TABLE IF EXISTS coupon;
@@ -79,13 +86,16 @@ CREATE TABLE coupon (
     valid_to DATE NOT NULL,
     disabled BOOLEAN NOT NULL,
     issued_at DATETIME ,
-    created_at DATETIME NOT NULL
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NULL
 );
 
 DROP TABLE IF EXISTS coupon_stock;
 CREATE TABLE coupon_stock (
     coupon_id BIGINT PRIMARY KEY,
-    quantity INT NOT NULL
+    quantity INT NOT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NULL
 );
 
 DROP TABLE IF EXISTS user_coupon;
@@ -95,5 +105,6 @@ CREATE TABLE user_coupon (
     coupon_id BIGINT,
     used BOOLEAN,
     used_at DATETIME,
-    created_at DATETIME NOT NULL
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NULL
 );
