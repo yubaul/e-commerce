@@ -1,26 +1,42 @@
 package kr.baul.server.domain.coupon;
 
+import jakarta.persistence.*;
 import kr.baul.server.common.exception.CouponDisabledException;
-import kr.baul.server.common.exception.OutOfStockException;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor
+@Entity
+@Table(name = "coupon")
 public class Coupon {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long itemId;
     private String name;
+
+    @Column(name = "discount_amount")
     private Long discountAmount;
+
+    @Column(name = "valid_from")
     private LocalDate validFrom;
+
+    @Column(name = "valid_to")
     private LocalDate validTo;
-    private int quantity;
+
     private boolean disabled;
+
     private LocalDateTime issuedAt;
-    private LocalDateTime createdAt;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id", referencedColumnName = "coupon_id") // CouponStock PK가 coupon_id니까
+    private CouponStock couponStock;
 
 
     @Builder
@@ -31,27 +47,20 @@ public class Coupon {
             Long discountAmount,
             LocalDate validFrom,
             LocalDate validTo,
-            int quantity
+            CouponStock couponStock
     ){
-        LocalDateTime now = LocalDateTime.now();
         this.id = id;
         this.itemId = itemId;
         this.name = name;
         this.discountAmount = discountAmount;
         this.validFrom = validFrom;
         this.validTo = validTo;
-        this.quantity = quantity;
+        this.couponStock = couponStock;
         this.disabled = false;
-        this.issuedAt = now;
-        this.createdAt = now;
     }
 
     public void issue() {
-        if (quantity <= 0) {
-            String message = "쿠폰 ID : " + this.id + ",  쿠폰 재고가 부족합니다.";
-            throw new OutOfStockException(message);
-        }
-        quantity -= 1;
+        couponStock.decrease(1);
     }
 
     public Long applyDiscount(Long totalPrice){

@@ -18,7 +18,7 @@ public class ItemInfo {
         this.id = item.getId();
         this.name = item.getName();
         this.price = item.getPrice();
-        this.quantity = item.getQuantity();
+        this.quantity = item.getItemStock().getQuantity();
     }
 
 }

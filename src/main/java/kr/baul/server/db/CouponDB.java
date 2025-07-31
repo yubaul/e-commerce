@@ -2,6 +2,7 @@ package kr.baul.server.db;
 
 import jakarta.annotation.PostConstruct;
 import kr.baul.server.domain.coupon.Coupon;
+import kr.baul.server.domain.coupon.CouponStock;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -17,6 +18,10 @@ public class CouponDB {
 
     @PostConstruct
     public void init(){
+        CouponStock couponStock1 = CouponStock.builder()
+                .couponId(1L)
+                .quantity(10)
+                .build();
         Coupon coupon1 = Coupon.builder()
                 .id(1L)
                 .itemId(1L)
@@ -24,7 +29,12 @@ public class CouponDB {
                 .discountAmount(10_000L)
                 .validFrom(LocalDate.now())
                 .validTo(LocalDate.now().plusDays(7))
-                .quantity(10)
+                .couponStock(couponStock1)
+                .build();
+
+        CouponStock couponStock2 = CouponStock.builder()
+                .couponId(2L)
+                .quantity(3)
                 .build();
         Coupon coupon2 = Coupon.builder()
                 .id(2L)
@@ -33,7 +43,7 @@ public class CouponDB {
                 .discountAmount(30_000L)
                 .validFrom(LocalDate.now())
                 .validTo(LocalDate.now().plusDays(7))
-                .quantity(3)
+                .couponStock(couponStock2)
                 .build();
         table.put(coupon1.getId(), coupon1);
         table.put(coupon2.getId(), coupon2);

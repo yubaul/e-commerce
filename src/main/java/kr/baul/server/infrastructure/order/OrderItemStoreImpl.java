@@ -1,6 +1,5 @@
 package kr.baul.server.infrastructure.order;
 
-import kr.baul.server.db.OrderItemDB;
 import kr.baul.server.domain.order.orderitem.OrderItem;
 import kr.baul.server.domain.order.orderitem.OrderItemStore;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +11,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderItemStoreImpl implements OrderItemStore {
 
-    private final OrderItemDB orderItemDB;
+    private final OrderItemRepository orderItemRepository;
 
     @Override
     public List<OrderItem> store(List<OrderItem> orderItems) {
-        return orderItems.stream()
-                .map(orderItemDB::insert)
-                .toList();
+        return orderItemRepository.saveAll(orderItems);
     }
 }

@@ -17,6 +17,10 @@
 docker-compose up -d
 ```
 
+```bash
+./gradlew test
+```
+
 ---
 
 ## :bookmark_tabs: Architecture

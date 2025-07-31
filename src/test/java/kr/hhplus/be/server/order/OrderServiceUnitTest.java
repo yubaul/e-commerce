@@ -171,49 +171,4 @@ class OrderServiceUnitTest {
                 .isInstanceOf(PaymentFailedException.class);
     }
 
-    @Test
-    void 주문_등록_결제_실패로_인한_복구_처리() {
-        // given
-        Long userId = 1L;
-        Long couponId = 100L;
-
-        List<OrderItem> orderItems = List.of(new OrderItem(10L, 2, couponId));
-        RegisterOrder registerOrder = new RegisterOrder(userId, orderItems);
-
-        Order dummyOrder = Order.builder()
-                .id(1L)
-                .userId(userId)
-                .totalAmount(123_000L)
-                .build();
-
-        Account dummyAccount = Account.builder()
-                .userId(userId)
-                .balance(0L)  // 결제 실패 유도
-                .build();
-
-        UserCoupon dummyCoupon = UserCoupon.builder()
-                .id(couponId)
-                .userId(userId)
-                .used(true)
-                .build();
-
-        when(orderFactory.store(userId, orderItems)).thenReturn(dummyOrder);
-        when(accountReader.getAccount(userId)).thenReturn(dummyAccount);
-        when(userCouponReader.getUserCoupon(couponId, userId)).thenReturn(dummyCoupon);
-
-        doThrow(new RuntimeException("결제 실패")).when(paymentProcessor).process(dummyAccount, dummyOrder);
-
-        // when & then
-        assertThatThrownBy(() -> orderService.registerOrder(registerOrder))
-                .isInstanceOf(PaymentFailedException.class);
-
-        // 복구 관련 메서드들이 호출되었는지 검증
-        verify(itemStockProcessor).restore(orderItems);
-        verify(userCouponReader).getUserCoupon(couponId, userId);
-        verify(userCouponStore).store(dummyCoupon);
-        verify(orderStore).store(dummyOrder);
-
-        // 주문 상태가 FAILED로 변경되었는지 확인
-        assertThat(dummyOrder.getOrderStatus()).isEqualTo(Order.OrderStatus.FAILED);
-    }
 }

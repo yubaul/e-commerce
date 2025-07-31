@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AccountHistoryStoreImpl implements AccountHistoryStore {
 
-    private final AccountHistoryDB accountHistoryDB;
+    private final AccountHistoryRepository accountHistoryRepository;
 
 
     @Override
@@ -19,16 +19,17 @@ public class AccountHistoryStoreImpl implements AccountHistoryStore {
             Account account,
             Long amount,
             AccountHistory.TransactionType transactionType,
-            AccountHistory.SourceType sourceType
+            AccountHistory.SourceType sourceType,
+            Long paymentId
     ) {
         AccountHistory accountHistory = AccountHistory.builder()
-                .id(AccountHistoryDB.getAtomicInteger())
                 .accountId(account.getId())
                 .amount(amount)
                 .balance(account.getBalance())
                 .transactionType(transactionType)
                 .sourceType(sourceType)
+                .paymentId(paymentId)
                 .build();
-        return accountHistoryDB.insert(accountHistory);
+        return accountHistoryRepository.save(accountHistory);
     }
 }

@@ -1,34 +1,25 @@
 spring:
   application:
     name: e-commerce
-  profiles:
-    active: local
-  datasource:
-    name: CommerceDataSource
-    type: com.zaxxer.hikari.HikariDataSource
-    hikari:
-      maximum-pool-size: 3
-      connection-timeout: 10000
-      max-lifetime: 60000
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  jpa:
-    open-in-view: false
-    generate-ddl: false
-    show-sql: false
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate.timezone.default_storage: NORMALIZE_UTC
-      hibernate.jdbc.time_zone: UTC
-
----
-spring.config.activate.on-profile: local, test
-
-spring:
+  config:
+    activate:
+      on-profile: local
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:sql/schema.sql
+      data-locations: classpath:sql/data.sql
   datasource:
     url: jdbc:mysql://localhost:3306/hhplus?characterEncoding=UTF-8&serverTimezone=UTC
     username: application
     password: application
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    open-in-view: true
+    generate-ddl: true
+    show-sql: true
+    hibernate:
+      ddl-auto: none
 
 server:
   port: 8888
