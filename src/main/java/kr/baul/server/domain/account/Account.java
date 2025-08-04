@@ -1,27 +1,34 @@
 package kr.baul.server.domain.account;
 
+import jakarta.persistence.*;
 import kr.baul.server.common.exception.InsufficientBalanceException;
-import lombok.AllArgsConstructor;
+import kr.baul.server.common.jpa.AbstractEntity;
+import kr.baul.server.domain.account.accounthistory.AccountHistory;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-@AllArgsConstructor
+
 @NoArgsConstructor
 @Getter
-public class Account {
+@Entity
+@Table(name = "accounts")
+public class Account extends AbstractEntity {
 
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long userId;
 
     private Long balance;
 
-    LocalDateTime updatedAt;
-
-    LocalDateTime createdAt;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private List<AccountHistory> accountHistory;
 
     @Builder
     public Account(
@@ -32,7 +39,6 @@ public class Account {
         this.id = id;
         this.userId = userId;
         this.balance = balance;
-        this.createdAt = LocalDateTime.now();
     }
 
     public Long charge(Long amount){

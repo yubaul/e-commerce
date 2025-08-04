@@ -1,7 +1,5 @@
 package kr.baul.server.domain.order;
 
-import kr.baul.server.db.OrderDB;
-import kr.baul.server.db.OrderItemDB;
 import kr.baul.server.domain.coupon.Coupon;
 import kr.baul.server.domain.coupon.CouponReader;
 import kr.baul.server.domain.coupon.usercoupon.UserCoupon;
@@ -31,7 +29,6 @@ public class OrderFactoryImpl implements OrderFactory {
         List<OrderItem> orderItems = new ArrayList<>();
         Long totalAmount = 0L;
         Order order = Order.builder()
-                .id(OrderDB.getAtomicInteger())
                 .userId(userId)
                 .build();
 
@@ -49,7 +46,6 @@ public class OrderFactoryImpl implements OrderFactory {
             }
 
             OrderItem orderItem = OrderItem.builder()
-                    .id(OrderItemDB.getAtomicInteger())
                     .orderId(order.getId())
                     .itemId(item.getId())
                     .quantity(quantity)

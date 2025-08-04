@@ -1,19 +1,33 @@
 package kr.baul.server.domain.order;
 
+import jakarta.persistence.*;
+import kr.baul.server.common.jpa.AbstractEntity;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDateTime;
 
 @Getter
-public class Order {
+@Entity
+@NoArgsConstructor
+@Table(name = "orders")
+public class Order extends AbstractEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "user_id")
     private Long userId;
+
+    @Column(name = "total_amount")
     private Long totalAmount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_status")
     private OrderStatus orderStatus;
-    private LocalDateTime createdAt;
+
 
     @Getter
     @RequiredArgsConstructor
@@ -36,7 +50,6 @@ public class Order {
         this.userId = userId;
         this.totalAmount = totalAmount;
         this.orderStatus = OrderStatus.CREATED;
-        this.createdAt = LocalDateTime.now();
 
     }
 

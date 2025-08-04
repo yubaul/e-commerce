@@ -9,6 +9,7 @@ import kr.baul.server.application.item.ItemService;
 import kr.baul.server.common.exception.EntityNotFoundException;
 import kr.baul.server.domain.item.Item;
 import kr.baul.server.domain.item.ItemReader;
+import kr.baul.server.domain.item.ItemStock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,11 +29,15 @@ class ItemServiceUnitTest {
     void 상품_조회_예외_없음() {
         // given
         Long itemId = 1L;
+        ItemStock itemStock = ItemStock.builder()
+                .itemId(itemId)
+                .quantity(50)
+                .build();
         Item item = Item.builder()
                 .id(itemId)
                 .name("테스트 상품")
                 .price(85_000L)
-                .quantity(50)
+                .itemStock(itemStock)
                 .build();
 
         when(itemReader.getItem(itemId)).thenReturn(item);

@@ -9,6 +9,7 @@ import kr.baul.server.domain.coupon.usercoupon.UserCouponStore;
 import kr.baul.server.interfaces.coupon.CouponDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class CouponService {
     private final CouponStore couponStore;
     private final UserCouponDetailMapper userCouponDetailMapper;
 
+    @Transactional
     public void issueCouponToUser(CouponDto.CouponIssueRequest request){
         var userId = request.getUserId();
         var couponId = request.getCouponId();
@@ -38,6 +40,7 @@ public class CouponService {
         userCouponStore.store(coupon, userId);
     }
 
+    @Transactional(readOnly = true)
     public List<UserCouponDetail.UserCouponInfo> getUserCoupons(Long userId){
         List<UserCoupon> userCoupons = userCouponReader.getUserCoupons(userId);
         return userCouponDetailMapper.of(userCoupons);

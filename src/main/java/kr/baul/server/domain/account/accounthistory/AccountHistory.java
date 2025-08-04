@@ -1,21 +1,35 @@
 package kr.baul.server.domain.account.accounthistory;
 
+import jakarta.persistence.*;
+import kr.baul.server.common.jpa.AbstractEntity;
 import lombok.*;
 
-import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
+@Entity
 @NoArgsConstructor
-public class AccountHistory {
+@Table(name = "account_history")
+public class AccountHistory extends AbstractEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "account_id")
     private Long accountId;
     private Long amount;
     private Long balance;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_type")
     private TransactionType transactionType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "source_type")
     private SourceType sourceType;
-    private LocalDateTime createdAt;
+
+    @Column(name = "payment_id")
+    private Long paymentId;
 
 
 
@@ -40,20 +54,19 @@ public class AccountHistory {
 
     @Builder
     public AccountHistory(
-            Long id,
             Long accountId,
             Long amount,
             Long balance,
             TransactionType transactionType,
-            SourceType sourceType
+            SourceType sourceType,
+            Long paymentId
     ){
-        this.id = id;
         this.accountId = accountId;
         this.amount = amount;
         this.balance = balance;
         this.transactionType = transactionType;
         this.sourceType = sourceType;
-        this.createdAt = LocalDateTime.now();
+        this.paymentId = paymentId;
     }
 
 

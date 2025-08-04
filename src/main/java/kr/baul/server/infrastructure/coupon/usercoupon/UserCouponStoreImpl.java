@@ -1,6 +1,5 @@
 package kr.baul.server.infrastructure.coupon.usercoupon;
 
-import kr.baul.server.db.UserCouponDB;
 import kr.baul.server.domain.coupon.Coupon;
 import kr.baul.server.domain.coupon.usercoupon.UserCoupon;
 import kr.baul.server.domain.coupon.usercoupon.UserCouponStore;
@@ -11,20 +10,19 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserCouponStoreImpl implements UserCouponStore {
 
-    private final UserCouponDB userCouponDB;
+    private final UserCouponRepository userCouponRepository;
 
     @Override
     public UserCoupon store(Coupon coupon, Long userId) {
         UserCoupon userCoupon = UserCoupon.builder()
-                .id(UserCouponDB.getAtomicInteger())
                 .userId(userId)
                 .couponId(coupon.getId())
                 .build();
-        return userCouponDB.insert(userCoupon);
+        return userCouponRepository.save(userCoupon);
     }
 
     @Override
     public UserCoupon store(UserCoupon userCoupon) {
-        return userCouponDB.insert(userCoupon);
+        return userCouponRepository.save(userCoupon);
     }
 }

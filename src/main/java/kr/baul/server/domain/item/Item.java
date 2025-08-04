@@ -1,53 +1,49 @@
 package kr.baul.server.domain.item;
 
-import kr.baul.server.common.exception.OutOfStockException;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
+import kr.baul.server.common.jpa.AbstractEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
-public class Item {
+@Entity
+@NoArgsConstructor
+@Table(name = "items")
+public class Item extends AbstractEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private Long price;
-    private int quantity;
-    private LocalDateTime createdAt;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id", referencedColumnName = "item_id")
+    private ItemStock itemStock;
+
 
     @Builder
     public Item(
             Long id,
             String name,
             Long price,
-            int quantity
+            ItemStock itemStock
     ){
         this.id = id;
         this.name = name;
         this.price = price;
-        this.quantity = quantity;
-        this.createdAt = LocalDateTime.now();
+        this.itemStock = itemStock;
     }
 
 
     public void decreaseQuantity(int amount) {
-
-        if (this.quantity < amount) {
-            throw new OutOfStockException(buildStockErrorMessage(amount));
-        }
-
-        this.quantity -= amount;
+        this.itemStock.decrease(amount);
     }
 
-    private String buildStockErrorMessage(int amount) {
-        return String.format("상품 ID: %d, 요청 수량: %d → 현재 재고: %d (부족)", this.id, amount, this.quantity);
-    }
 
-    public void increaseQuantity(int quantity) {
-        this.quantity += quantity;
-    }
+
 
 }
