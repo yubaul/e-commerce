@@ -22,7 +22,7 @@ public class AccountService {
     @Transactional
     public Long charge(AccountCommand.AccountCharge command){
         var amount = command.amount();
-        Account account = accountReader.getAccount(command.userId());
+        Account account = accountReader.getAccountWithLock(command.userId());
         account.charge(amount);
 
         accountStore.store(account);

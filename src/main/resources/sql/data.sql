@@ -130,3 +130,9 @@ VALUES (101, 10, NOW());
 INSERT INTO user_coupon (id, user_id, coupon_id, used, used_at, created_at)
 VALUES (1001, 11, 101, false, NOW(), NOW());
 
+
+
+
+-- 계좌 잔액 충전 동시성 테스트를 위한 계좌
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (2, 500, 0, NOW(), NOW());
