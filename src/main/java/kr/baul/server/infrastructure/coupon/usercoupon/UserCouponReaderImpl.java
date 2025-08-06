@@ -14,11 +14,6 @@ public class UserCouponReaderImpl implements UserCouponReader {
     private final UserCouponRepository userCouponRepository;
 
     @Override
-    public boolean hasCoupon(Long userId, Long couponId) {
-        return userCouponRepository.existsByUserIdAndCouponId(userId, couponId);
-    }
-
-    @Override
     public List<UserCoupon> getUserCoupons(Long userId) {
         return userCouponRepository.findAllByUserIdAndUsedFalse(userId);
     }

@@ -59,9 +59,6 @@ public class Coupon {
         this.disabled = false;
     }
 
-    public void issue() {
-        couponStock.decrease(1);
-    }
 
     public Long applyDiscount(Long totalPrice){
         if(this.disabled){

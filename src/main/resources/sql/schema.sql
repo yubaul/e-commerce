@@ -93,7 +93,8 @@ CREATE TABLE coupon (
 DROP TABLE IF EXISTS coupon_stock;
 CREATE TABLE coupon_stock (
     coupon_id BIGINT PRIMARY KEY,
-    quantity INT NOT NULL,
+    quantity INT NOT NULL default 0,
+    version INT NOT NULL DEFAULT 1,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NULL
 );
@@ -108,3 +109,5 @@ CREATE TABLE user_coupon (
     created_at DATETIME NOT NULL,
     updated_at DATETIME NULL
 );
+
+ALTER TABLE user_coupon ADD CONSTRAINT uk_user_coupon UNIQUE (user_id, coupon_id);

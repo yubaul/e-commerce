@@ -6,8 +6,8 @@ import kr.baul.server.domain.coupon.*;
 import kr.baul.server.domain.coupon.usercoupon.UserCoupon;
 import kr.baul.server.domain.coupon.usercoupon.UserCouponReader;
 import kr.baul.server.domain.coupon.usercoupon.UserCouponStore;
-import kr.baul.server.interfaces.coupon.CouponDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,24 +20,27 @@ public class CouponService {
 
     private final UserCouponReader userCouponReader;
     private final UserCouponStore userCouponStore;
-    private final CouponReader couponReader;
-    private final CouponStore couponStore;
     private final UserCouponDetailMapper userCouponDetailMapper;
+    private final CouponStockReader couponStockReader;
+    private final CouponStockStore couponStockStore;
+    private static final int COUPON_ISSUE_DECREMENT = 1;
 
     @Transactional
-    public void issueCouponToUser(CouponDto.CouponIssueRequest request){
-        var userId = request.getUserId();
-        var couponId = request.getCouponId();
+    public void issueCouponToUser(CouponCommand.IssueCoupon command){
+        var userId = command.userId();
+        var couponId = command.couponId();
 
-        if (userCouponReader.hasCoupon(userId, couponId)) {
+        CouponStock couponStock = couponStockReader.getCouponStockWithLock(couponId);
+        couponStock.decrease(COUPON_ISSUE_DECREMENT);
+
+        couponStockStore.store(couponStock);
+
+        try {
+            userCouponStore.store(couponStock.getCouponId(), userId);
+        }catch (DataIntegrityViolationException e){
             throw new DuplicateCouponIssueException();
         }
 
-        Coupon coupon = couponReader.getCoupon(couponId);
-        coupon.issue();
-
-        couponStore.store(coupon);
-        userCouponStore.store(coupon, userId);
     }
 
     @Transactional(readOnly = true)

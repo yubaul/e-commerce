@@ -8,8 +8,6 @@ import java.util.Optional;
 
 public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
 
-    boolean existsByUserIdAndCouponId(Long userId, Long couponId);
-
     List<UserCoupon> findAllByUserIdAndUsedFalse(Long userId);
 
     Optional<UserCoupon> findByCouponIdAndUserId(Long couponId, Long userId);

@@ -136,3 +136,23 @@ VALUES (1001, 11, 101, false, NOW(), NOW());
 -- 계좌 잔액 충전 동시성 테스트를 위한 계좌
 INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
 VALUES (2, 500, 0, NOW(), NOW());
+
+
+-- 선착순 쿠폰 발급 동시성 테스트
+INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, disabled, issued_at, created_at)
+VALUES (500, 1000, '동시성 테스트용 쿠폰', 2000, '2025-07-01', '2025-08-31', false, NULL, NOW());
+
+INSERT INTO coupon_stock (coupon_id, quantity, created_at)
+VALUES (500, 100, NOW());
+
+INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, disabled, issued_at, created_at)
+VALUES (501, 1000, '동시성 테스트용 쿠폰', 2000, '2025-07-01', '2025-08-31', false, NULL, NOW());
+
+INSERT INTO coupon_stock (coupon_id, quantity, created_at)
+VALUES (501, 10, NOW());
+
+INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, disabled, issued_at, created_at)
+VALUES (502, 1000, '동시성 테스트용 쿠폰', 2000, '2025-07-01', '2025-08-31', false, NULL, NOW());
+
+INSERT INTO coupon_stock (coupon_id, quantity, created_at)
+VALUES (502, 10, NOW());

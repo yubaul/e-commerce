@@ -23,7 +23,8 @@ public class CouponApiController {
     @Operation(summary = "선착순 쿠폰 발급 API", description = "userId를 통해 선착순 쿠폰을 발급합니다.")
     @PostMapping("/issue")
     public CommonResponse issueCouponToUser(@RequestBody @Valid CouponDto.CouponIssueRequest request) {
-        couponService.issueCouponToUser(request);
+        var command = couponDtoMapper.of(request);
+        couponService.issueCouponToUser(command);
         return CommonResponse.success();
     }
 

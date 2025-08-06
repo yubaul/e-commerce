@@ -13,10 +13,10 @@ public class UserCouponStoreImpl implements UserCouponStore {
     private final UserCouponRepository userCouponRepository;
 
     @Override
-    public UserCoupon store(Coupon coupon, Long userId) {
+    public UserCoupon store(Long couponId, Long userId) {
         UserCoupon userCoupon = UserCoupon.builder()
                 .userId(userId)
-                .couponId(coupon.getId())
+                .couponId(couponId)
                 .build();
         return userCouponRepository.save(userCoupon);
     }
