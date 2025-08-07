@@ -32,7 +32,6 @@ public class CouponUseProcessorImpl implements CouponUseProcessor{
     public Coupon useCoupon(Long couponId, Long userId) {
         UserCoupon userCoupon = userCouponReader.getUserCoupon(couponId, userId);
         userCoupon.use();
-        Coupon coupon = couponReader.getCoupon(userCoupon.getCouponId());
-        return coupon;
+        return couponReader.getCoupon(userCoupon.getCouponId());
     }
 }
