@@ -94,7 +94,6 @@ DROP TABLE IF EXISTS coupon_stock;
 CREATE TABLE coupon_stock (
     coupon_id BIGINT PRIMARY KEY,
     quantity INT NOT NULL default 0,
-    version INT NOT NULL DEFAULT 1,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NULL
 );
@@ -105,6 +104,7 @@ CREATE TABLE user_coupon (
     user_id BIGINT,
     coupon_id BIGINT,
     used BOOLEAN,
+    version INT DEFAULT 1,
     used_at DATETIME,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NULL

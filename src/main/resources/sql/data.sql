@@ -156,3 +156,81 @@ VALUES (502, 1000, '동시성 테스트용 쿠폰', 2000, '2025-07-01', '2025-08
 
 INSERT INTO coupon_stock (coupon_id, quantity, created_at)
 VALUES (502, 10, NOW());
+
+
+-- 주문 상품 재고 감소 동시성 테스트
+
+-- 동시_주문_요청시_재고_수량만큼만_주문_성공
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (600, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (600, 5, NOW(), NOW());
+
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (600, 600, 100000, NOW(), NOW());
+
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (601, 601, 100000, NOW(), NOW());
+
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (602, 602, 100000, NOW(), NOW());
+
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (603, 603, 100000, NOW(), NOW());
+
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (604, 604, 100000, NOW(), NOW());
+
+-- 동시_주문_요청시_재고_초과_예외
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (650, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (650, 4, NOW(), NOW());
+
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (650, 650, 100000, NOW(), NOW());
+
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (651, 651, 100000, NOW(), NOW());
+
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (652, 652, 100000, NOW(), NOW());
+
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (653, 653, 100000, NOW(), NOW());
+
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (654, 654, 100000, NOW(), NOW());
+
+-- 동시_잔액_차감_시_한도_이내만_성공
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (660, 660, 30000, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (660, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (660, 5, NOW(), NOW());
+
+
+-- 동시_쿠폰_사용_요청_시_하나만_할인_적용되고_나머지는_정가로_주문됨
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (670, 670, 100000, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (670, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (670, 5, NOW(), NOW());
+
+INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, disabled, issued_at, created_at)
+VALUES (670, 670, '동시성 테스트용 쿠폰', 5000, '2025-07-01', '2025-08-31', false, NULL, NOW());
+
+INSERT INTO coupon_stock (coupon_id, quantity, created_at)
+VALUES (670, 100, NOW());
+
+INSERT INTO user_coupon (id, user_id, coupon_id, used, used_at, created_at)
+VALUES (670, 670, 670, false, NOW(), NOW());

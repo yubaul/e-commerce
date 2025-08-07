@@ -1,9 +1,7 @@
 package kr.baul.server.domain.order;
 
 
-import kr.baul.server.domain.item.Item;
-import kr.baul.server.domain.item.ItemReader;
-import kr.baul.server.domain.item.ItemStore;
+import kr.baul.server.domain.item.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,14 +10,14 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class ItemStockProcessorImpl implements ItemStockProcessor {
-    private final ItemReader itemReader;
-    private final ItemStore itemStore;
+    private final ItemStockReader itemStockReader;
+    private final ItemStockStore itemStockStore;
     @Override
     public void deduct(List<OrderCommand.RegisterOrder.OrderItem> items) {
         for (OrderCommand.RegisterOrder.OrderItem item : items) {
-            Item getItem =  itemReader.getItem(item.itemId());
-            getItem.decreaseQuantity(item.quantity());
-            itemStore.store(getItem);
+            ItemStock itemStock = itemStockReader.getItemStockWithLock(item.itemId());
+            itemStock.decrease(item.quantity());
+            itemStockStore.store(itemStock);
         }
     }
 }

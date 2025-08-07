@@ -57,7 +57,7 @@ public class AccountServiceIntegrationTest extends IntegrationTestBase {
         // when & then
         assertThatThrownBy(() -> accountService.charge(command))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("해당 사용자에게 등록된 계좌가 없습니다.");
+                .hasMessage(("해당 USER-ID : " + userId +  " 사용자에게 등록된 계좌가 없습니다."));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class AccountServiceIntegrationTest extends IntegrationTestBase {
         // when & then
         assertThatThrownBy(() -> accountService.getAccountBalance(userId))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("해당 사용자에게 등록된 계좌가 없습니다.");
+                .hasMessage(("해당 USER-ID : " + userId +  " 사용자에게 등록된 계좌가 없습니다."));
     }
 
     @Test
