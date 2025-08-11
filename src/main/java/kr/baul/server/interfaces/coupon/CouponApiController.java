@@ -3,6 +3,7 @@ package kr.baul.server.interfaces.coupon;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import kr.baul.server.application.coupon.CouponService;
 import kr.baul.server.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,9 @@ public class CouponApiController {
 
     @Operation(summary = "선착순 쿠폰 발급 API", description = "userId를 통해 선착순 쿠폰을 발급합니다.")
     @PostMapping("/issue")
-    public CommonResponse issueCouponToUser(@RequestBody CouponDto.CouponIssueRequest request) {
-        couponService.issueCouponToUser(request);
+    public CommonResponse issueCouponToUser(@RequestBody @Valid CouponDto.CouponIssueRequest request) {
+        var command = couponDtoMapper.of(request);
+        couponService.issueCouponToUser(command);
         return CommonResponse.success();
     }
 

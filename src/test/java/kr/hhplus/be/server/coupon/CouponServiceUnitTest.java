@@ -6,7 +6,6 @@ import kr.baul.server.domain.coupon.*;
 import kr.baul.server.domain.coupon.usercoupon.UserCoupon;
 import kr.baul.server.domain.coupon.usercoupon.UserCouponReader;
 import kr.baul.server.domain.coupon.usercoupon.UserCouponStore;
-import kr.baul.server.interfaces.coupon.CouponDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -29,20 +28,27 @@ class CouponServiceUnitTest {
     @Mock CouponStore couponStore;
     @Mock UserCouponDetailMapper userCouponDetailMapper;
 
+    @Mock CouponStockReader couponStockReader;
+    @Mock CouponStockStore couponStockStore;
+
     @Test
     void 이미_쿠폰을_보유하고_있으면_예외() {
         // given
         Long userId = 1L;
         Long couponId = 100L;
 
-        CouponDto.CouponIssueRequest request = new CouponDto.CouponIssueRequest();
-        request.setUserId(userId);
-        request.setCouponId(couponId);
+        CouponCommand.IssueCoupon command = CouponCommand.IssueCoupon.builder()
+                .userId(userId)
+                .couponId(couponId)
+                .build();
 
-        when(userCouponReader.hasCoupon(userId, couponId)).thenReturn(true);
+        CouponStock mockStock = mock(CouponStock.class);
+        when(couponStockReader.getCouponStockWithLock(couponId)).thenReturn(mockStock);
+        when(mockStock.getCouponId()).thenReturn(couponId);
+        doThrow(new DuplicateCouponIssueException()).when(userCouponStore).store(couponId, userId);
 
-        // expect
-        assertThatThrownBy(() -> couponService.issueCouponToUser(request))
+        // when&then
+        assertThatThrownBy(() -> couponService.issueCouponToUser(command))
                 .isInstanceOf(DuplicateCouponIssueException.class);
     }
 
@@ -52,17 +58,17 @@ class CouponServiceUnitTest {
         Long userId = 1L;
         Long couponId = 100L;
 
-        CouponDto.CouponIssueRequest request = new CouponDto.CouponIssueRequest();
-        request.setUserId(userId);
-        request.setCouponId(couponId);
+        CouponCommand.IssueCoupon command = CouponCommand.IssueCoupon.builder()
+                .userId(userId)
+                .couponId(couponId)
+                .build();
 
-        Coupon coupon = mock(Coupon.class);
+        CouponStock couponStock = mock(CouponStock.class);
 
-        when(userCouponReader.hasCoupon(userId, couponId)).thenReturn(false);
-        when(couponReader.getCoupon(couponId)).thenReturn(coupon);
+        when(couponStockReader.getCouponStockWithLock(couponId)).thenReturn(couponStock);
 
         // when
-        couponService.issueCouponToUser(request);
+        couponService.issueCouponToUser(command);
 
         // then
         // 예외 없으면 성공

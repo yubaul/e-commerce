@@ -27,6 +27,9 @@ public class UserCoupon extends AbstractEntity {
 
     private boolean used;
 
+    @Version
+    private Long version;
+
     @Column(name = "used_at")
     private LocalDateTime usedAt;
 

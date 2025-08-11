@@ -1,5 +1,6 @@
 package kr.baul.server.interfaces.coupon;
 
+import kr.baul.server.domain.coupon.CouponCommand;
 import kr.baul.server.domain.coupon.UserCouponDetail;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -15,5 +16,7 @@ import java.util.List;
 public interface CouponDtoMapper {
 
     List<CouponDto.UserCoupon> of(List<UserCouponDetail.UserCouponInfo> userCouponInfos);
+
+    CouponCommand.IssueCoupon of(CouponDto.CouponIssueRequest request);
 
 }
