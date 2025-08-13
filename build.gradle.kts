@@ -37,6 +37,7 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.retry:spring-retry:2.0.12")
+    implementation("org.redisson:redisson-spring-boot-starter:3.50.0")
 
 	// lombok
 	compileOnly("org.projectlombok:lombok")

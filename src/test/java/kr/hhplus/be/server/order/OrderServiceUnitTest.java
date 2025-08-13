@@ -80,7 +80,7 @@ class OrderServiceUnitTest {
                 .build();
 
         when(orderFactory.store(userId, orderItems)).thenReturn(dummyOrder);
-        when(accountReader.getAccountWithLock(userId)).thenReturn(dummyAccount);
+        when(accountReader.getAccount(userId)).thenReturn(dummyAccount);
         when(orderInfoMapper.of(dummyOrder)).thenReturn(dummyOrderInfo);
 
         // when
@@ -94,7 +94,7 @@ class OrderServiceUnitTest {
         verify(itemStockProcessor).deduct(orderItems);
         verify(paymentProcessor).process(dummyAccount, dummyOrder);
         verify(orderFactory).store(userId, orderItems);
-        verify(accountReader).getAccountWithLock(userId);
+        verify(accountReader).getAccount(userId);
         verify(orderInfoMapper).of(dummyOrder);
     }
 
@@ -163,7 +163,7 @@ class OrderServiceUnitTest {
                 .build();
 
         when(orderFactory.store(userId, orderItems)).thenReturn(dummyOrder);
-        when(accountReader.getAccountWithLock(userId)).thenReturn(dummyAccount);
+        when(accountReader.getAccount(userId)).thenReturn(dummyAccount);
         doThrow(new PaymentFailedException()).when(paymentProcessor).process(dummyAccount, dummyOrder);
 
         // when & then

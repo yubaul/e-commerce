@@ -28,7 +28,7 @@ public class OrderService {
         itemStockProcessor.deduct(requestItems);
         Order order = orderFactory.store(userId, requestItems);
 
-        Account account = accountReader.getAccountWithLock(userId);
+        Account account = accountReader.getAccount(userId);
         paymentProcessor.process(account, order);
 
         return orderInfoMapper.of(order);
