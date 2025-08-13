@@ -143,7 +143,7 @@ INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, di
 VALUES (500, 1000, '동시성 테스트용 쿠폰', 2000, '2025-07-01', '2025-08-31', false, NULL, NOW());
 
 INSERT INTO coupon_stock (coupon_id, quantity, created_at)
-VALUES (500, 100, NOW());
+VALUES (500, 30, NOW());
 
 INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, disabled, issued_at, created_at)
 VALUES (501, 1000, '동시성 테스트용 쿠폰', 2000, '2025-07-01', '2025-08-31', false, NULL, NOW());

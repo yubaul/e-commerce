@@ -24,7 +24,7 @@ public @interface CommonLock {
     /**
      * 락의 시간 단위
      */
-    TimeUnit timeUnit() default TimeUnit.SECONDS;
+    TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
 
     /**
      * 락을 기다리는 시간 (default - 800ms)

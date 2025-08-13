@@ -38,7 +38,7 @@ public class CommonLockAop {
         boolean locked = false;
 
         try {
-            locked = rLock.tryLock(commonLock.waitTime(), commonLock.leaseTime(), TimeUnit.MILLISECONDS);  // (2)
+            locked = rLock.tryLock(commonLock.waitTime(), commonLock.leaseTime(), commonLock.timeUnit());  // (2)
             if (!locked) {
                 throw new LockAcquisitionException();
             }
