@@ -42,11 +42,9 @@ public class Order extends AbstractEntity {
 
     @Builder
     public Order(
-            Long id,
             Long userId,
             Long totalAmount
     ){
-        this.id = id;
         this.userId = userId;
         this.totalAmount = totalAmount;
         this.orderStatus = OrderStatus.CREATED;

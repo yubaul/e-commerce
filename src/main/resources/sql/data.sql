@@ -62,8 +62,8 @@ VALUES (200, 1000, '중복 테스트용 쿠폰', 1000, '2025-07-01', '2025-08-31
 INSERT INTO coupon_stock (coupon_id, quantity, created_at)
 VALUES (200, 5, NOW());
 
-INSERT INTO user_coupon (id, user_id, coupon_id, used, used_at, created_at)
-VALUES (1, 10, 200, false, NULL, NOW());
+INSERT INTO user_coupon (id, user_id, coupon_id, user_coupon_status, used_at, created_at)
+VALUES (1, 10, 200, 'AVAILABLE', NULL, NOW());
 
 -- 쿠폰 201: 새로 발급할 수 있는 쿠폰
 INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, disabled, issued_at, created_at)
@@ -117,8 +117,8 @@ INSERT INTO coupon_stock (coupon_id, quantity, created_at)
 VALUES (100, 10, NOW());
 
 -- 쿠폰 발급 및 사용 처리
-INSERT INTO user_coupon (id, user_id, coupon_id, used, used_at, created_at)
-VALUES (1000, 11, 100, true, NOW(), NOW());
+INSERT INTO user_coupon (id, user_id, coupon_id, user_coupon_status, used_at, created_at)
+VALUES (1000, 11, 100, 'USED', NOW(), NOW());
 
 -- 사용 중지된 쿠폰 (couponId = 101)
 INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, disabled, issued_at, created_at)
@@ -127,8 +127,8 @@ VALUES (101, 500, '사용 중지된 쿠폰', 3000, '2025-01-01', '2025-12-31', t
 INSERT INTO coupon_stock (coupon_id, quantity, created_at)
 VALUES (101, 10, NOW());
 
-INSERT INTO user_coupon (id, user_id, coupon_id, used, used_at, created_at)
-VALUES (1001, 11, 101, false, NOW(), NOW());
+INSERT INTO user_coupon (id, user_id, coupon_id, user_coupon_status, used_at, created_at)
+VALUES (1001, 11, 101, 'AVAILABLE', NOW(), NOW());
 
 
 
@@ -182,6 +182,36 @@ VALUES (603, 603, 100000, NOW(), NOW());
 INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
 VALUES (604, 604, 100000, NOW(), NOW());
 
+-- 동시_다중상품_중간_재고_품절시_이전_차감_롤백
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (610, 610, 100000, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (610, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (610, 1, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (611, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (611, 1, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (612, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (612, 1, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (613, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (613, 1, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (614, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (614, 1, NOW(), NOW());
+
+
 -- 동시_주문_요청시_재고_초과_예외
 
 INSERT INTO items (id, name, price, created_at, updated_at)
@@ -232,5 +262,25 @@ VALUES (670, 670, '동시성 테스트용 쿠폰', 5000, '2025-07-01', '2025-08-
 INSERT INTO coupon_stock (coupon_id, quantity, created_at)
 VALUES (670, 100, NOW());
 
-INSERT INTO user_coupon (id, user_id, coupon_id, used, used_at, created_at)
-VALUES (670, 670, 670, false, NOW(), NOW());
+INSERT INTO user_coupon (id, user_id, coupon_id, user_coupon_status, used_at, created_at)
+VALUES (670, 670, 670, 'AVAILABLE', NOW(), NOW());
+
+
+-- 결제_실패시_쿠폰_해제_및_재고_복구_그리고_주문_상태_FAILED
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (680, 680, 10000, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (680, '주문 동시성 테스트 상품', 20000, NOW(), NOW());
+
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (680, 5, NOW(), NOW());
+
+INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, disabled, issued_at, created_at)
+VALUES (680, 680, '동시성 테스트용 쿠폰', 5000, '2025-07-01', '2025-08-31', false, NULL, NOW());
+
+INSERT INTO coupon_stock (coupon_id, quantity, created_at)
+VALUES (680, 100, NOW());
+
+INSERT INTO user_coupon (id, user_id, coupon_id, user_coupon_status, used_at, created_at)
+VALUES (680, 680, 680, 'AVAILABLE', NOW(), NOW());

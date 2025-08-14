@@ -101,10 +101,10 @@ CREATE TABLE coupon_stock (
 DROP TABLE IF EXISTS user_coupon;
 CREATE TABLE user_coupon (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT,
-    coupon_id BIGINT,
-    used BOOLEAN,
-    version INT DEFAULT 1,
+    user_id BIGINT NOT NULL,
+    coupon_id BIGINT NOT NULL,
+    order_id BIGINT,
+    user_coupon_status VARCHAR(20) NOT NULL,
     used_at DATETIME,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NULL

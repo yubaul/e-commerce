@@ -19,7 +19,12 @@ public @interface CommonLock {
     /**
      * 접근 테이블 ID
      */
-    String id();
+    String id() default "";
+
+    /**
+     * 접근 테이블 ID 복수 조합
+     */
+    String[] ids() default {};
 
     /**
      * 락의 시간 단위
