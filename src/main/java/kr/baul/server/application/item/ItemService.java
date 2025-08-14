@@ -28,7 +28,11 @@ public class ItemService {
         return itemInfoMapper.of(item);
     }
 
-    @Cacheable(value = "topSellingItems")
+    @Cacheable(
+            value = "topSellingItems.v1.10m",
+            key = "'topSelling:last3days:' + T(java.time.LocalDate).now() + ':limit=5'",
+            unless = "#result == null || #result.isEmpty()"
+    )
     @Transactional(readOnly = true)
     public List<ItemInfo.TopSelling> getTopSellingItems(){
         LocalDate today = LocalDate.now();
