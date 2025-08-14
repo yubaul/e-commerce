@@ -39,8 +39,10 @@ public class ItemApiController {
 
     @Operation(summary = "인기 상품 조회 API", description = "최근 3일 동안 가장 많이 팔린 상위 5개 상품을 조회합니다.")
     @GetMapping("/top-selling")
-    public CommonResponse getTopSellingItems(){
-        return CommonResponse.success();
+    public CommonResponse<ItemDto.TopSellingResponse> getTopSellingItems(){
+        var result = itemService.getTopSellingItems();
+        var response = itemDtoMapper.toTopSellingResponse(result);
+        return CommonResponse.success(response);
     }
 
 }
