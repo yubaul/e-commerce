@@ -37,6 +37,8 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.retry:spring-retry:2.0.12")
+    implementation("org.redisson:redisson-spring-boot-starter:3.50.0")
+    implementation("org.springframework.boot:spring-boot-starter-cache:3.5.3")
 
 	// lombok
 	compileOnly("org.projectlombok:lombok")
@@ -49,6 +51,13 @@ dependencies {
 
     // DB
 	runtimeOnly("com.mysql:mysql-connector-j")
+
+    // QueryDSL
+    implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
+    annotationProcessor("com.querydsl:querydsl-apt:5.1.0:jakarta")
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api:3.1.0")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api:2.1.1")
+
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")

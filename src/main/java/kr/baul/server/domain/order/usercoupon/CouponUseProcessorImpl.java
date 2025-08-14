@@ -1,15 +1,12 @@
 package kr.baul.server.domain.order.usercoupon;
 
-import jakarta.persistence.OptimisticLockException;
+import kr.baul.server.common.config.CommonLock;
 import kr.baul.server.domain.coupon.Coupon;
 import kr.baul.server.domain.coupon.CouponReader;
 import kr.baul.server.domain.coupon.usercoupon.UserCoupon;
 import kr.baul.server.domain.coupon.usercoupon.UserCouponReader;
+import kr.baul.server.domain.coupon.usercoupon.UserCouponStore;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,20 +15,38 @@ public class CouponUseProcessorImpl implements CouponUseProcessor{
 
     private final UserCouponReader userCouponReader;
     private final CouponReader couponReader;
+    private final UserCouponStore userCouponStore;
 
+    @CommonLock(key = "'userCoupon'", ids = {"#couponId", "#userId"})
     @Override
-    @Retryable(
-            value = {
-                    OptimisticLockException.class,
-                    ObjectOptimisticLockingFailureException.class,
-                    OptimisticLockingFailureException.class
-            },
-            maxAttempts = 4,
-            backoff = @Backoff(delay = 100, multiplier = 1.5)
-    )
-    public Coupon useCoupon(Long couponId, Long userId) {
+    public Coupon reserve(Long couponId, Long userId, Long orderId) {
         UserCoupon userCoupon = userCouponReader.getUserCoupon(couponId, userId);
-        userCoupon.use();
+        userCoupon.hold(orderId);
+        userCouponStore.store(userCoupon);
         return couponReader.getCoupon(userCoupon.getCouponId());
+    }
+
+    @CommonLock(key = "'userCoupon'", ids = {"#couponId", "#userId"})
+    @Override
+    public boolean use(Long couponId, Long userId, Long orderId) {
+        return userCouponReader.getUserCouponBoundToOrder(couponId, userId, orderId)
+                .map( userCoupon ->{
+                    userCoupon.confirmUse(orderId);
+                    userCouponStore.store(userCoupon);
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    @CommonLock(key = "'userCoupon'", ids = {"#couponId", "#userId"})
+    @Override
+    public boolean cancelReserve(Long couponId, Long userId, Long orderId) {
+        return userCouponReader.getUserCouponBoundToOrder(couponId, userId, orderId)
+                .map( userCoupon ->{
+                    userCoupon.release(orderId);
+                    userCouponStore.store(userCoupon);
+                    return true;
+                })
+                .orElse(false);
     }
 }

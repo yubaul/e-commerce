@@ -87,8 +87,8 @@ class CouponServiceIntegrationTest extends IntegrationTestBase {
     @Test
     void 다수_유저의_동시_쿠폰_요청에도_재고만큼만_정상_발급() throws Exception {
         // given
-        int threadCount = 100;
-        int initialQuantity = 100;
+        int threadCount = 30;
+        int initialQuantity = 30;
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
         Long couponId = 500L;

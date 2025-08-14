@@ -1,6 +1,7 @@
 package kr.baul.server.application.coupon;
 
 
+import kr.baul.server.common.config.CommonLock;
 import kr.baul.server.common.exception.DuplicateCouponIssueException;
 import kr.baul.server.domain.coupon.*;
 import kr.baul.server.domain.coupon.usercoupon.UserCoupon;
@@ -25,12 +26,12 @@ public class CouponService {
     private final CouponStockStore couponStockStore;
     private static final int COUPON_ISSUE_DECREMENT = 1;
 
-    @Transactional
+    @CommonLock(key = "coupon", id = "#command.couponId()")
     public void issueCouponToUser(CouponCommand.IssueCoupon command){
         var userId = command.userId();
         var couponId = command.couponId();
 
-        CouponStock couponStock = couponStockReader.getCouponStockWithLock(couponId);
+        CouponStock couponStock = couponStockReader.getCouponStock(couponId);
         couponStock.decrease(COUPON_ISSUE_DECREMENT);
 
         couponStockStore.store(couponStock);

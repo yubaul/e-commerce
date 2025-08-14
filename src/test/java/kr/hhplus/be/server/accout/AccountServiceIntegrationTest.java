@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.accout;
 
-import kr.baul.server.application.account.AccountCommand;
+import kr.baul.server.domain.account.AccountCommand;
 import kr.baul.server.application.account.AccountService;
 import kr.baul.server.common.exception.EntityNotFoundException;
 import kr.hhplus.be.server.IntegrationTestBase;

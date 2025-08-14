@@ -3,7 +3,7 @@ package kr.hhplus.be.server.accout;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 
-import kr.baul.server.application.account.AccountCommand;
+import kr.baul.server.domain.account.AccountCommand;
 import kr.baul.server.application.account.AccountService;
 import kr.baul.server.common.exception.EntityNotFoundException;
 import kr.baul.server.domain.account.Account;
@@ -48,7 +48,7 @@ public class AccountServiceUnitTest {
                 .build();
 
 
-        when(accountReader.getAccountWithLock(account.getUserId())).thenReturn(account);
+        when(accountReader.getAccount(account.getUserId())).thenReturn(account);
         when(accountStore.store(account)).thenReturn(account);
 
         // when
@@ -68,7 +68,7 @@ public class AccountServiceUnitTest {
                 .amount(amount)
                 .build();
 
-        when(accountReader.getAccountWithLock(userId))
+        when(accountReader.getAccount(userId))
                 .thenThrow(new EntityNotFoundException("해당 사용자에게 등록된 계좌가 없습니다."));
 
         // when & then

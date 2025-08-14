@@ -1,5 +1,6 @@
 package kr.baul.server.domain.coupon;
 
+import kr.baul.server.domain.coupon.usercoupon.UserCoupon;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,7 +14,8 @@ public class UserCouponDetail {
         private Long id;
         private Long userId;
         private Long couponId;
-        private boolean used;
+        private Long orderId;
+        private UserCoupon.UserCouponStatus userCouponStatus;
         private LocalDateTime usedAt;
         private LocalDateTime createdAt;
     }

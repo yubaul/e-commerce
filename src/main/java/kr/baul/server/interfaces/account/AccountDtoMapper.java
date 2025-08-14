@@ -1,6 +1,6 @@
 package kr.baul.server.interfaces.account;
 
-import kr.baul.server.application.account.AccountCommand;
+import kr.baul.server.domain.account.AccountCommand;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;

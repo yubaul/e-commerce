@@ -3,11 +3,14 @@ package kr.hhplus.be.server.order;
 import kr.baul.server.common.exception.*;
 import kr.baul.server.domain.account.Account;
 import kr.baul.server.domain.account.AccountReader;
+import kr.baul.server.domain.coupon.usercoupon.UserCoupon;
 import kr.baul.server.domain.item.ItemStock;
+import kr.baul.server.domain.order.Order;
 import kr.baul.server.domain.order.OrderCommand.RegisterOrder;
 import kr.baul.server.domain.order.OrderCommand.RegisterOrder.OrderItem;
 import kr.baul.server.domain.order.OrderService;
 import kr.baul.server.domain.order.orderinfo.OrderInfo;
+import kr.baul.server.infrastructure.coupon.usercoupon.UserCouponRepository;
 import kr.baul.server.infrastructure.item.ItemStockRepository;
 import kr.baul.server.infrastructure.order.OrderRepository;
 import kr.hhplus.be.server.IntegrationTestBase;
@@ -33,17 +36,16 @@ import static org.assertj.core.api.Assertions.*;
 @ActiveProfiles("test")
 public class OrderServiceIntegrationTest extends IntegrationTestBase {
 
-    @Autowired
-    OrderService orderService;
+    @Autowired OrderService orderService;
 
-    @Autowired
-    ItemStockRepository itemStockRepository;
+    @Autowired ItemStockRepository itemStockRepository;
 
-    @Autowired
-    AccountReader accountReader;
+    @Autowired AccountReader accountReader;
 
-    @Autowired
-    OrderRepository orderRepository;
+    @Autowired UserCouponRepository userCouponRepository;
+
+    @Autowired OrderRepository orderRepository;
+
 
     @Test
     void 주문_등록_성공() {
@@ -138,6 +140,38 @@ public class OrderServiceIntegrationTest extends IntegrationTestBase {
         assertThat(stock.getQuantity())
                 .as("남은 재고는 0이어야 함")
                 .isEqualTo(0);
+    }
+
+    @Test
+    void 동시_다중상품_중간_재고_품절시_이전_차감_롤백() {
+        // given
+        // 재고 1개씩 가진 5개 상품 세팅
+        Long userId = 610L;
+        List<Long> itemIds = List.of(610L, 611L, 612L, 613L, 614L);
+
+        // 주문: 앞의 3개는 1개씩 정상 차감, 4번째에서 2개를 요구해 품절 유도, 5번째는 도달하지 않음
+        List<OrderItem> orderItems = List.of(
+                new OrderItem(itemIds.get(0), 1, null),
+                new OrderItem(itemIds.get(1), 1, null),
+                new OrderItem(itemIds.get(2), 1, null),
+                new OrderItem(itemIds.get(3), 2, null), // ← 여기서 OutOfStockException 발생
+                new OrderItem(itemIds.get(4), 1, null)
+        );
+        RegisterOrder registerOrder = new RegisterOrder(userId, orderItems);
+
+        // when & then
+        // 품절 예외가 발생해야 한다
+        assertThatThrownBy(() -> orderService.registerOrder(registerOrder))
+                .isInstanceOf(OutOfStockException.class);
+
+        // 이전에 차감됐던 3개도 모두 원복되어, 전 상품 재고가 그대로 1이어야 한다
+        for (Long itemId : itemIds) {
+            ItemStock s = itemStockRepository.findById(itemId).get();
+            assertThat(s.getQuantity())
+                    .as("롤백 후 재고는 1이어야 함 (itemId=%s)", itemId)
+                    .isEqualTo(1);
+        }
+
     }
 
     @Test
@@ -244,6 +278,56 @@ public class OrderServiceIntegrationTest extends IntegrationTestBase {
         assertThat(fullPriceCount.get())
                 .as("나머지는 정가")
                 .isEqualTo(threadCount - 1);
+    }
+
+    @Test
+    void 결제_실패시_쿠폰_해제_및_재고_복구_그리고_주문_상태_FAILED() {
+        // given
+        // 잔액 부족을 유도할 사용자/상품/쿠폰
+        Long userId = 680L;          // 잔액이 적거나 결제 실패 유도 가능한 유저
+        Long itemId = 680L;          // 재고 1 이상 존재
+        Long couponId = 680L;    // 해당 유저가 보유 중(AVAILABLE)인 쿠폰의 coupon_id (user_coupon.coupon_id)
+
+        // 주문은 1개만 구매 + 쿠폰 사용 (결제 단계에서 InsufficientBalanceException을 기대)
+        RegisterOrder cmd = new RegisterOrder(
+                userId,
+                List.of(new OrderItem(itemId, 1, couponId))
+        );
+
+        // 현재 재고 스냅샷
+        int beforeQty = itemStockRepository.findById(itemId)
+                .orElseThrow()
+                .getQuantity();
+
+        // 쿠폰은 AVAILABLE 상태여야 함(사전 보장)
+        UserCoupon before = userCouponRepository.findByCouponIdAndUserId(couponId, userId)
+                .orElseThrow(() -> new IllegalStateException("사전 쿠폰 픽스처 없음"));
+        assertThat(before.getUserCouponStatus()).isEqualTo(UserCoupon.UserCouponStatus.AVAILABLE);
+        assertThat(before.getOrderId()).isNull();
+
+        // when
+        assertThatThrownBy(() -> orderService.registerOrder(cmd))
+                .as("결제 단계에서 실패(잔액 부족 등)해야 함")
+                .isInstanceOf(InsufficientBalanceException.class);
+
+        // then
+        // 재고 원복: 차감되었다가 보상 로직으로 복구되어 beforeQty와 동일해야 함
+        int afterQty = itemStockRepository.findById(itemId)
+                .orElseThrow()
+                .getQuantity();
+        assertThat(afterQty).as("결제 실패 시 재고는 원복되어야 함").isEqualTo(beforeQty);
+
+        // 쿠폰 RELEASE: 이 주문에서 HELD했던 쿠폰이 다시 AVAILABLE로 돌아가고 order_id가 null이어야 함
+        UserCoupon after = userCouponRepository.findByCouponIdAndUserId(couponId, userId)
+                .orElseThrow();
+        assertThat(after.getUserCouponStatus()).isEqualTo(UserCoupon.UserCouponStatus.AVAILABLE);
+        assertThat(after.getOrderId()).as("보상 후 쿠폰은 특정 주문에 묶여있지 않아야 함").isNull();
+
+        // 주문 FAILED: 최신 주문 조회해서 상태가 FAILED인지 확인
+        Order failedOrder = orderRepository.findByUserIdAndOrderStatus(userId, Order.OrderStatus.FAILED)
+                .stream().findFirst()
+                .orElseThrow(() -> new IllegalStateException("주문이 생성되지 않았음"));
+        assertThat(failedOrder.getOrderStatus()).isEqualTo(Order.OrderStatus.FAILED);
     }
 
     @Test

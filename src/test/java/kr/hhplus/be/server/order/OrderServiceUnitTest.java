@@ -1,12 +1,9 @@
 package kr.hhplus.be.server.order;
 
 import kr.baul.server.common.exception.*;
-import kr.baul.server.domain.account.Account;
 import kr.baul.server.domain.account.AccountReader;
-import kr.baul.server.domain.coupon.usercoupon.UserCoupon;
-import kr.baul.server.domain.coupon.usercoupon.UserCouponReader;
-import kr.baul.server.domain.coupon.usercoupon.UserCouponStore;
 import kr.baul.server.domain.order.*;
+import kr.baul.server.domain.order.itemstock.ItemStockProcessor;
 import kr.baul.server.domain.order.orderinfo.OrderInfo;
 import kr.baul.server.domain.order.orderinfo.OrderInfoMapper;
 import kr.baul.server.domain.order.payment.PaymentProcessor;
@@ -45,12 +42,6 @@ class OrderServiceUnitTest {
     OrderInfoMapper orderInfoMapper;
 
     @Mock
-    UserCouponReader userCouponReader;
-
-    @Mock
-    UserCouponStore userCouponStore;
-
-    @Mock
     OrderStore orderStore;
 
     @Test
@@ -63,24 +54,16 @@ class OrderServiceUnitTest {
         RegisterOrder registerOrder = new RegisterOrder(userId, orderItems);
 
         Order dummyOrder = Order.builder()
-                .id(1L)
                 .userId(userId)
                 .totalAmount(200_000L)
                 .build();
 
-        Account dummyAccount = Account.builder()
-                .userId(userId)
-                .balance(100_000L)
-                .build();
-
         OrderInfo.Order dummyOrderInfo = OrderInfo.Order.builder()
-                .id(1L)
                 .userId(userId)
                 .totalAmount(200_000L)
                 .build();
 
         when(orderFactory.store(userId, orderItems)).thenReturn(dummyOrder);
-        when(accountReader.getAccountWithLock(userId)).thenReturn(dummyAccount);
         when(orderInfoMapper.of(dummyOrder)).thenReturn(dummyOrderInfo);
 
         // when
@@ -88,13 +71,11 @@ class OrderServiceUnitTest {
 
         // then
         assertThat(result).isNotNull();
-        assertThat(result.id()).isEqualTo(1L);
 
         // verify
-        verify(itemStockProcessor).deduct(orderItems);
-        verify(paymentProcessor).process(dummyAccount, dummyOrder);
+        verify(itemStockProcessor).deductAllOrRollback(orderItems);
+        verify(paymentProcessor).process(userId, dummyOrder);
         verify(orderFactory).store(userId, orderItems);
-        verify(accountReader).getAccountWithLock(userId);
         verify(orderInfoMapper).of(dummyOrder);
     }
 
@@ -105,7 +86,7 @@ class OrderServiceUnitTest {
         List<OrderItem> orderItems = List.of(new OrderItem(10L, 2, null));
         RegisterOrder registerOrder = new RegisterOrder(userId, orderItems);
 
-        doThrow(new OutOfStockException()).when(itemStockProcessor).deduct(orderItems);
+        doThrow(new OutOfStockException()).when(itemStockProcessor).deductAllOrRollback(orderItems);
 
         // when & then
         assertThatThrownBy(() -> orderService.registerOrder(registerOrder))
@@ -120,7 +101,7 @@ class OrderServiceUnitTest {
         RegisterOrder registerOrder = new RegisterOrder(userId, orderItems);
         String message = "이미 사용된 쿠폰입니다. userCouponId = " + 100L;
 
-        doThrow(new CouponAlreadyUsedException(message)).when(itemStockProcessor).deduct(orderItems);
+        doThrow(new CouponAlreadyUsedException(message)).when(itemStockProcessor).deductAllOrRollback(orderItems);
 
         // when & then
         assertThatThrownBy(() -> orderService.registerOrder(registerOrder))
@@ -152,19 +133,12 @@ class OrderServiceUnitTest {
         RegisterOrder registerOrder = new RegisterOrder(userId, orderItems);
 
         Order dummyOrder = Order.builder()
-                .id(1L)
                 .userId(userId)
                 .totalAmount(999_999_999L)
                 .build();
 
-        Account dummyAccount = Account.builder()
-                .userId(userId)
-                .balance(0L)
-                .build();
-
         when(orderFactory.store(userId, orderItems)).thenReturn(dummyOrder);
-        when(accountReader.getAccountWithLock(userId)).thenReturn(dummyAccount);
-        doThrow(new PaymentFailedException()).when(paymentProcessor).process(dummyAccount, dummyOrder);
+        doThrow(new PaymentFailedException()).when(paymentProcessor).process(userId, dummyOrder);
 
         // when & then
         assertThatThrownBy(() -> orderService.registerOrder(registerOrder))

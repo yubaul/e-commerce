@@ -10,6 +10,8 @@ import kr.baul.server.domain.order.usercoupon.CouponUseProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,24 +26,26 @@ public class OrderFactoryImpl implements OrderFactory {
     private final OrderItemStore orderItemStore;
     private final CouponUseProcessor couponUseProcessor;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public Order store(Long userId, List<OrderCommand.RegisterOrder.OrderItem> requestItems) {
         List<OrderItem> orderItems = new ArrayList<>();
         Long totalAmount = 0L;
         Order order = Order.builder()
                 .userId(userId)
+                .totalAmount(0L)
                 .build();
+        orderStore.store(order);
 
-        for (OrderCommand.RegisterOrder.OrderItem requestItem : requestItems) {
+        for (var requestItem : requestItems) {
             Item item = itemReader.getItem(requestItem.itemId());
-            Long couponId = requestItem.couponId();;
-            int quantity = requestItem.quantity();
-            Long itemPriceAtOrder = item.getPrice() * quantity;
+            Long lineAmount = item.getPrice() * requestItem.quantity();
 
+            Long couponId = requestItem.couponId();;
             if (couponId != null) {
                 try {
-                    Coupon coupon = couponUseProcessor.useCoupon(couponId, userId);
-                    itemPriceAtOrder = coupon.applyDiscount(itemPriceAtOrder);
+                    Coupon coupon = couponUseProcessor.reserve(couponId, userId, order.getId());
+                    lineAmount = coupon.applyDiscount(lineAmount);
                 }catch (CouponAlreadyUsedException e) {
                     log.warn("쿠폰 중복 사용: couponId={}, userId={}, msg={}", requestItem.couponId(), userId, e.getMessage());
                 }
@@ -50,16 +54,15 @@ public class OrderFactoryImpl implements OrderFactory {
             OrderItem orderItem = OrderItem.builder()
                     .orderId(order.getId())
                     .itemId(item.getId())
-                    .quantity(quantity)
-                    .itemPriceAtOrder(itemPriceAtOrder)
+                    .quantity(requestItem.quantity())
+                    .itemPriceAtOrder(lineAmount)
                     .build();
 
             orderItems.add(orderItem);
-            totalAmount += itemPriceAtOrder;
+            totalAmount += lineAmount;
         }
 
         order.setTotalAmount(totalAmount);
-
         orderStore.store(order);
         orderItemStore.store(orderItems);
 

@@ -13,8 +13,8 @@ public class ItemStockReaderImpl implements ItemStockReader {
     private final ItemStockRepository itemStockRepository;
 
     @Override
-    public ItemStock getItemStockWithLock(Long itemIId) {
-        return itemStockRepository.findForUpdateByItemId(itemIId)
+    public ItemStock getItemStock(Long itemIId) {
+        return itemStockRepository.findByItemId(itemIId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 상품이 없습니다."));
     }
 }

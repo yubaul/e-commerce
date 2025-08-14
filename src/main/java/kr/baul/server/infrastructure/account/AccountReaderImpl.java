@@ -18,10 +18,5 @@ public class AccountReaderImpl implements AccountReader {
                 .orElseThrow(() -> new EntityNotFoundException(("해당 USER-ID : " + userId +  " 사용자에게 등록된 계좌가 없습니다.")));
     }
 
-    @Override
-    public Account getAccountWithLock(Long userId) {
-        return accountRepository.findForUpdateByUserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException(("해당 USER-ID : " + userId +  " 사용자에게 등록된 계좌가 없습니다.")));
-    }
 
 }

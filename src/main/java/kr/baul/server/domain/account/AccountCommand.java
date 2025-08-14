@@ -1,4 +1,4 @@
-package kr.baul.server.application.account;
+package kr.baul.server.domain.account;
 
 import lombok.Builder;
 

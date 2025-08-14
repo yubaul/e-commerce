@@ -12,8 +12,8 @@ public class CouponStockReaderImpl implements CouponStockReader {
     private final CouponStockRepository couponStockRepository;
 
     @Override
-    public CouponStock getCouponStockWithLock(Long couponId) {
-        return couponStockRepository.findForUpdateByCouponId(couponId)
+    public CouponStock getCouponStock(Long couponId) {
+        return couponStockRepository.findByCouponId(couponId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 쿠폰에 재고 엔티티가 없습니다."));
     }
 }
