@@ -5,6 +5,7 @@ import kr.baul.server.domain.item.iteminfo.ItemInfo;
 import kr.baul.server.domain.item.ItemReader;
 import kr.baul.server.domain.item.iteminfo.ItemInfoMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,8 @@ public class ItemService {
         return itemInfoMapper.of(item);
     }
 
+    @Cacheable(value = "topSellingItems")
+    @Transactional(readOnly = true)
     public List<ItemInfo.TopSelling> getTopSellingItems(){
         LocalDate today = LocalDate.now();
         LocalDateTime start = today.minusDays(2).atStartOfDay();

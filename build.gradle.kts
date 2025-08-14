@@ -38,6 +38,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.retry:spring-retry:2.0.12")
     implementation("org.redisson:redisson-spring-boot-starter:3.50.0")
+    implementation("org.springframework.boot:spring-boot-starter-cache:3.5.3")
 
 	// lombok
 	compileOnly("org.projectlombok:lombok")
