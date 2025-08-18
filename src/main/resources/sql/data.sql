@@ -62,8 +62,8 @@ VALUES (200, 1000, '중복 테스트용 쿠폰', 1000, '2025-07-01', '2025-08-31
 INSERT INTO coupon_stock (coupon_id, quantity, created_at)
 VALUES (200, 5, NOW());
 
-INSERT INTO user_coupon (id, user_id, coupon_id, used, used_at, created_at)
-VALUES (1, 10, 200, false, NULL, NOW());
+INSERT INTO user_coupon (id, user_id, coupon_id, user_coupon_status, used_at, created_at)
+VALUES (1, 10, 200, 'AVAILABLE', NULL, NOW());
 
 -- 쿠폰 201: 새로 발급할 수 있는 쿠폰
 INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, disabled, issued_at, created_at)
@@ -117,8 +117,8 @@ INSERT INTO coupon_stock (coupon_id, quantity, created_at)
 VALUES (100, 10, NOW());
 
 -- 쿠폰 발급 및 사용 처리
-INSERT INTO user_coupon (id, user_id, coupon_id, used, used_at, created_at)
-VALUES (1000, 11, 100, true, NOW(), NOW());
+INSERT INTO user_coupon (id, user_id, coupon_id, user_coupon_status, used_at, created_at)
+VALUES (1000, 11, 100, 'USED', NOW(), NOW());
 
 -- 사용 중지된 쿠폰 (couponId = 101)
 INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, disabled, issued_at, created_at)
@@ -127,8 +127,8 @@ VALUES (101, 500, '사용 중지된 쿠폰', 3000, '2025-01-01', '2025-12-31', t
 INSERT INTO coupon_stock (coupon_id, quantity, created_at)
 VALUES (101, 10, NOW());
 
-INSERT INTO user_coupon (id, user_id, coupon_id, used, used_at, created_at)
-VALUES (1001, 11, 101, false, NOW(), NOW());
+INSERT INTO user_coupon (id, user_id, coupon_id, user_coupon_status, used_at, created_at)
+VALUES (1001, 11, 101, 'AVAILABLE', NOW(), NOW());
 
 
 
@@ -143,7 +143,7 @@ INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, di
 VALUES (500, 1000, '동시성 테스트용 쿠폰', 2000, '2025-07-01', '2025-08-31', false, NULL, NOW());
 
 INSERT INTO coupon_stock (coupon_id, quantity, created_at)
-VALUES (500, 100, NOW());
+VALUES (500, 30, NOW());
 
 INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, disabled, issued_at, created_at)
 VALUES (501, 1000, '동시성 테스트용 쿠폰', 2000, '2025-07-01', '2025-08-31', false, NULL, NOW());
@@ -181,6 +181,36 @@ VALUES (603, 603, 100000, NOW(), NOW());
 
 INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
 VALUES (604, 604, 100000, NOW(), NOW());
+
+-- 동시_다중상품_중간_재고_품절시_이전_차감_롤백
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (610, 610, 100000, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (610, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (610, 1, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (611, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (611, 1, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (612, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (612, 1, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (613, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (613, 1, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (614, '주문 동시성 테스트 상품', 10000, NOW(), NOW());
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (614, 1, NOW(), NOW());
+
 
 -- 동시_주문_요청시_재고_초과_예외
 
@@ -232,5 +262,116 @@ VALUES (670, 670, '동시성 테스트용 쿠폰', 5000, '2025-07-01', '2025-08-
 INSERT INTO coupon_stock (coupon_id, quantity, created_at)
 VALUES (670, 100, NOW());
 
-INSERT INTO user_coupon (id, user_id, coupon_id, used, used_at, created_at)
-VALUES (670, 670, 670, false, NOW(), NOW());
+INSERT INTO user_coupon (id, user_id, coupon_id, user_coupon_status, used_at, created_at)
+VALUES (670, 670, 670, 'AVAILABLE', NOW(), NOW());
+
+
+-- 결제_실패시_쿠폰_해제_및_재고_복구_그리고_주문_상태_FAILED
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (680, 680, 10000, NOW(), NOW());
+
+INSERT INTO items (id, name, price, created_at, updated_at)
+VALUES (680, '주문 동시성 테스트 상품', 20000, NOW(), NOW());
+
+INSERT INTO item_stock (item_id, quantity, created_at, updated_at)
+VALUES (680, 5, NOW(), NOW());
+
+INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, disabled, issued_at, created_at)
+VALUES (680, 680, '동시성 테스트용 쿠폰', 5000, '2025-07-01', '2025-08-31', false, NULL, NOW());
+
+INSERT INTO coupon_stock (coupon_id, quantity, created_at)
+VALUES (680, 100, NOW());
+
+INSERT INTO user_coupon (id, user_id, coupon_id, user_coupon_status, used_at, created_at)
+VALUES (680, 680, 680, 'AVAILABLE', NOW(), NOW());
+
+
+
+
+
+-- 인기 상품 조회
+-- 아이템 10개
+INSERT INTO items (id, name, price, created_at, updated_at) VALUES
+(2000, 'Item A', 1000, NOW(), NOW()),
+(2001, 'Item B', 1500, NOW(), NOW()),
+(2002, 'Item C', 2000, NOW(), NOW()),
+(2003, 'Item D', 2500, NOW(), NOW()),
+(2004, 'Item E', 3000, NOW(), NOW()),
+(2005, 'Item F', 3500, NOW(), NOW()),
+(2006, 'Item G', 4000, NOW(), NOW()),
+(2007, 'Item H', 4500, NOW(), NOW()),
+(2008, 'Item I', 5000, NOW(), NOW()),
+(2009, 'Item J', 5500, NOW(), NOW());
+
+-- 주문 30건
+INSERT INTO orders (id, user_id, total_amount, order_status, created_at, updated_at) VALUES
+(2100, 1, 5000,  'PAID',     DATE_ADD(NOW(), INTERVAL -1 DAY), NOW()),
+(2101, 2, 3000,  'PAID',     DATE_ADD(NOW(), INTERVAL -2 DAY), NOW()),
+(2102, 3, 4500,  'CREATED',  DATE_ADD(NOW(), INTERVAL -3 DAY), NOW()),
+(2103, 4, 7000,  'PAID',     DATE_ADD(NOW(), INTERVAL -4 DAY), NOW()),
+(2104, 5, 2500,  'FAILED',   DATE_ADD(NOW(), INTERVAL -5 DAY), NOW()),
+(2105, 6, 8000,  'PAID',     DATE_ADD(NOW(), INTERVAL -6 DAY), NOW()),
+(2106, 7, 1500,  'CANCELED', DATE_ADD(NOW(), INTERVAL -7 DAY), NOW()),
+(2107, 8, 9000,  'PAID',     DATE_ADD(NOW(), INTERVAL -8 DAY), NOW()),
+(2108, 9, 5000,  'PAID',     DATE_ADD(NOW(), INTERVAL -9 DAY), NOW()),
+(2109, 10, 2000, 'PAID',     DATE_ADD(NOW(), INTERVAL -10 DAY), NOW()),
+(2110, 11, 3000, 'PAID',     DATE_ADD(NOW(), INTERVAL -2 DAY), NOW()),
+(2111, 12, 4500, 'CREATED',  DATE_ADD(NOW(), INTERVAL -3 DAY), NOW()),
+(2112, 13, 7000, 'PAID',     DATE_ADD(NOW(), INTERVAL -4 DAY), NOW()),
+(2113, 14, 2500, 'FAILED',   DATE_ADD(NOW(), INTERVAL -5 DAY), NOW()),
+(2114, 15, 8000, 'PAID',     DATE_ADD(NOW(), INTERVAL -6 DAY), NOW()),
+(2115, 16, 1500, 'CANCELED', DATE_ADD(NOW(), INTERVAL -7 DAY), NOW()),
+(2116, 17, 9000, 'PAID',     DATE_ADD(NOW(), INTERVAL -8 DAY), NOW()),
+(2117, 18, 5000, 'PAID',     DATE_ADD(NOW(), INTERVAL -9 DAY), NOW()),
+(2118, 19, 2000, 'PAID',     DATE_ADD(NOW(), INTERVAL -10 DAY), NOW()),
+(2119, 20, 6000, 'PAID',     DATE_ADD(NOW(), INTERVAL -1 DAY), NOW()),
+(2120, 21, 4500, 'PAID',     DATE_ADD(NOW(), INTERVAL -2 DAY), NOW()),
+(2121, 22, 7000, 'PAID',     DATE_ADD(NOW(), INTERVAL -3 DAY), NOW()),
+(2122, 23, 2500, 'FAILED',   DATE_ADD(NOW(), INTERVAL -4 DAY), NOW()),
+(2123, 24, 8000, 'PAID',     DATE_ADD(NOW(), INTERVAL -5 DAY), NOW()),
+(2124, 25, 1500, 'CANCELED', DATE_ADD(NOW(), INTERVAL -6 DAY), NOW()),
+(2125, 26, 9000, 'PAID',     DATE_ADD(NOW(), INTERVAL -7 DAY), NOW()),
+(2126, 27, 5000, 'PAID',     DATE_ADD(NOW(), INTERVAL -8 DAY), NOW()),
+(2127, 28, 2000, 'PAID',     DATE_ADD(NOW(), INTERVAL -9 DAY), NOW()),
+(2128, 29, 6000, 'PAID',     DATE_ADD(NOW(), INTERVAL -10 DAY), NOW()),
+(2129, 30, 4000, 'PAID',     DATE_ADD(NOW(), INTERVAL -1 DAY), NOW());
+
+
+-- 주문아이템
+INSERT INTO order_items (id, order_id, item_id, quantity, item_price_at_order, created_at, updated_at) VALUES
+(2200, 2100, 2000, 2, 1000, NOW(), NOW()),
+(2201, 2100, 2001, 1, 1500, NOW(), NOW()),
+(2202, 2100, 2002, 1, 2000, NOW(), NOW()),
+(2203, 2101, 2003, 1, 2500, NOW(), NOW()),
+(2204, 2101, 2004, 2, 3000, NOW(), NOW()),
+(2205, 2102, 2000, 3, 1000, NOW(), NOW()),
+(2206, 2103, 2005, 2, 3500, NOW(), NOW()),
+(2207, 2103, 2006, 1, 4000, NOW(), NOW()),
+(2208, 2104, 2007, 2, 4500, NOW(), NOW()),
+(2209, 2105, 2008, 3, 5000, NOW(), NOW()),
+(2210, 2106, 2009, 1, 5500, NOW(), NOW()),
+(2211, 2107, 2000, 4, 1000, NOW(), NOW()),
+(2212, 2107, 2001, 2, 1500, NOW(), NOW()),
+(2213, 2108, 2002, 3, 2000, NOW(), NOW()),
+(2214, 2109, 2003, 2, 2500, NOW(), NOW()),
+(2215, 2110, 2004, 1, 3000, NOW(), NOW()),
+(2216, 2110, 2005, 1, 3500, NOW(), NOW()),
+(2217, 2111, 2006, 2, 4000, NOW(), NOW()),
+(2218, 2112, 2007, 3, 4500, NOW(), NOW()),
+(2219, 2113, 2008, 1, 5000, NOW(), NOW()),
+(2220, 2114, 2009, 2, 5500, NOW(), NOW()),
+(2221, 2115, 2000, 2, 1000, NOW(), NOW()),
+(2222, 2116, 2001, 1, 1500, NOW(), NOW()),
+(2223, 2117, 2002, 4, 2000, NOW(), NOW()),
+(2224, 2118, 2003, 2, 2500, NOW(), NOW()),
+(2225, 2119, 2004, 1, 3000, NOW(), NOW()),
+(2226, 2120, 2005, 3, 3500, NOW(), NOW()),
+(2227, 2121, 2006, 2, 4000, NOW(), NOW()),
+(2228, 2122, 2007, 4, 4500, NOW(), NOW()),
+(2229, 2123, 2008, 1, 5000, NOW(), NOW()),
+(2230, 2124, 2009, 1, 5500, NOW(), NOW()),
+(2231, 2125, 2000, 3, 1000, NOW(), NOW()),
+(2232, 2126, 2001, 2, 1500, NOW(), NOW()),
+(2233, 2127, 2002, 1, 2000, NOW(), NOW()),
+(2234, 2128, 2003, 4, 2500, NOW(), NOW()),
+(2235, 2129, 2004, 2, 3000, NOW(), NOW());

@@ -1,5 +1,5 @@
 package kr.baul.server.domain.coupon;
 
 public interface CouponStockReader {
-    CouponStock getCouponStockWithLock(Long couponId);
+    CouponStock getCouponStock(Long couponId);
 }

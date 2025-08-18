@@ -5,7 +5,10 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.DockerImageName;
 
 
 import java.sql.Connection;
@@ -16,6 +19,7 @@ import java.sql.Statement;
 public abstract class IntegrationTestBase {
 
     private static final MySQLContainer<?> MYSQL_CONTAINER;
+    private static final GenericContainer<?> REDIS_CONTAINER;
 
     static {
         MYSQL_CONTAINER = new MySQLContainer<>("mysql:8.0")
@@ -23,6 +27,12 @@ public abstract class IntegrationTestBase {
                 .withUsername("application")
                 .withPassword("application");
         MYSQL_CONTAINER.start();
+
+        // Redis (단일)
+        REDIS_CONTAINER = new GenericContainer<>(DockerImageName.parse("redis:7.2-alpine"))
+                .withExposedPorts(6379)
+                .waitingFor(Wait.forListeningPort());
+        REDIS_CONTAINER.start();
 
         System.setProperty("spring.datasource.url", MYSQL_CONTAINER.getJdbcUrl());
         System.setProperty("spring.datasource.username", MYSQL_CONTAINER.getUsername());

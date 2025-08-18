@@ -30,7 +30,8 @@ public class CouponDto {
         private Long id;
         private Long userId;
         private Long couponId;
-        private boolean used;
+        private Long orderId;
+        private String userCouponStatus;
         private LocalDateTime usedAt;
         private LocalDateTime createdAt;
     }

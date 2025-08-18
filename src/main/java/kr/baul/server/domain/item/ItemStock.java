@@ -35,6 +35,10 @@ public class ItemStock extends AbstractEntity {
         this.quantity -= amount;
     }
 
+    public void increase(int amount) {
+        this.quantity += amount;
+    }
+
     private String buildStockErrorMessage(int amount) {
         return String.format("상품 ID: %d, 요청 수량: %d → 현재 재고: %d (부족)", this.itemId, amount, this.quantity);
     }

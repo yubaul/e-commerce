@@ -43,7 +43,7 @@ class CouponServiceUnitTest {
                 .build();
 
         CouponStock mockStock = mock(CouponStock.class);
-        when(couponStockReader.getCouponStockWithLock(couponId)).thenReturn(mockStock);
+        when(couponStockReader.getCouponStock(couponId)).thenReturn(mockStock);
         when(mockStock.getCouponId()).thenReturn(couponId);
         doThrow(new DuplicateCouponIssueException()).when(userCouponStore).store(couponId, userId);
 
@@ -65,7 +65,7 @@ class CouponServiceUnitTest {
 
         CouponStock couponStock = mock(CouponStock.class);
 
-        when(couponStockReader.getCouponStockWithLock(couponId)).thenReturn(couponStock);
+        when(couponStockReader.getCouponStock(couponId)).thenReturn(couponStock);
 
         // when
         couponService.issueCouponToUser(command);
