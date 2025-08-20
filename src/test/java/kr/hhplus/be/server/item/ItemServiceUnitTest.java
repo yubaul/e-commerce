@@ -11,15 +11,14 @@ import kr.baul.server.domain.item.Item;
 import kr.baul.server.domain.item.ItemReader;
 import kr.baul.server.domain.item.ItemStock;
 import kr.baul.server.domain.item.iteminfo.ItemInfoMapper;
+import kr.baul.server.domain.item.itemrank.ItemRankingMerger;
+import kr.baul.server.domain.item.itemrank.ItemRankingReader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +33,12 @@ class ItemServiceUnitTest {
 
     @Mock
     ItemInfoMapper itemInfoMapper;
+
+    @Mock
+    ItemRankingReader itemRankingReader;
+
+    @Mock
+    ItemRankingMerger itemRankingMerger;
 
     @Test
     void 상품_조회_예외_없음() {
@@ -82,15 +87,37 @@ class ItemServiceUnitTest {
     @Test
     void 인기상품_조회_정상_조회() {
         // given
-        List<ItemInfo.TopSelling> expected = List.of(mock(ItemInfo.TopSelling.class));
-        when(itemReader.getTopSellingItems(any(), any(), anyInt()))
-                .thenReturn(expected);
+        Long itemId = 2300L;
+        String itemName = "Item A";
+
+        var rankedTopSelling = ItemInfo.TopSelling.builder()
+                .itemId(itemId)
+                .salesVolume(50)
+                .build();
+        var ranked = List.of(rankedTopSelling);
+
+        var itemEntity = Item.builder()
+                .id(itemId)
+                .name(itemName)
+                .build();
+
+        var expectedTopSelling = ItemInfo.TopSelling.builder()
+                .itemId(itemId)
+                .itemName(itemName)
+                .salesVolume(50)
+                .build();
+        var expected = List.of(expectedTopSelling);
+
+        when(itemRankingReader.getTop5ItemsLast3Days()).thenReturn(ranked);
+        when(itemReader.getItems(List.of(itemId))).thenReturn(List.of(itemEntity));
+        when(itemRankingMerger.merge(ranked, List.of(itemEntity))).thenReturn(expected);
 
         // when
-        List<ItemInfo.TopSelling> result = itemService.getTopSellingItems();
+        var result = itemService.getTopSellingItems();
 
         // then
-        assertThat(result).isEqualTo(expected);
-        verify(itemReader).getTopSellingItems(any(), any(), eq(5));
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getItemId()).isEqualTo(itemId);
+        assertThat(result.get(0).getItemName()).isEqualTo(itemName);
     }
 }

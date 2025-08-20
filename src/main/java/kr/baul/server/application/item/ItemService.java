@@ -4,13 +4,11 @@ import kr.baul.server.domain.item.Item;
 import kr.baul.server.domain.item.iteminfo.ItemInfo;
 import kr.baul.server.domain.item.ItemReader;
 import kr.baul.server.domain.item.iteminfo.ItemInfoMapper;
+import kr.baul.server.domain.item.itemrank.ItemRankingMerger;
+import kr.baul.server.domain.item.itemrank.ItemRankingReader;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -20,6 +18,8 @@ public class ItemService {
 
     private final ItemReader itemReader;
     private final ItemInfoMapper itemInfoMapper;
+    private final ItemRankingReader itemRankingReader;
+    private final ItemRankingMerger itemRankingMerger;
 
 
     @Transactional(readOnly = true)
@@ -28,17 +28,15 @@ public class ItemService {
         return itemInfoMapper.of(item);
     }
 
-    @Cacheable(
-            value = "topSellingItems.v1.10m",
-            key = "'topSelling:last3days:' + T(java.time.LocalDate).now() + ':limit=5'",
-            unless = "#result == null || #result.isEmpty()"
-    )
     @Transactional(readOnly = true)
-    public List<ItemInfo.TopSelling> getTopSellingItems(){
-        LocalDate today = LocalDate.now();
-        LocalDateTime start = today.minusDays(2).atStartOfDay();
-        LocalDateTime endExclusive = today.plusDays(1).atStartOfDay();
-        return itemReader.getTopSellingItems(start, endExclusive, 5);
+    public List<ItemInfo.TopSelling> getTopSellingItems() {
+        var ranked = itemRankingReader.getTop5ItemsLast3Days();
+        if (ranked == null || ranked.isEmpty()) return List.of();
+
+        var ids = ranked.stream().map(ItemInfo.TopSelling::getItemId).toList();
+        var items = itemReader.getItems(ids);
+
+        return itemRankingMerger.merge(ranked, items);
     }
 
 }
