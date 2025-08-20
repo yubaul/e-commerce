@@ -1,7 +1,7 @@
 package kr.baul.server.interfaces.coupon;
 
 import kr.baul.server.domain.coupon.CouponCommand;
-import kr.baul.server.domain.coupon.UserCouponDetail;
+import kr.baul.server.domain.coupon.usercoupon.UserCouponDetail;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;

@@ -1,6 +1,5 @@
-package kr.baul.server.domain.coupon;
+package kr.baul.server.domain.coupon.usercoupon;
 
-import kr.baul.server.domain.coupon.usercoupon.UserCoupon;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -2,10 +2,11 @@ package kr.hhplus.be.server.coupon;
 
 import kr.baul.server.application.coupon.CouponService;
 import kr.baul.server.common.exception.DuplicateCouponIssueException;
+import kr.baul.server.common.exception.OutOfStockException;
 import kr.baul.server.domain.coupon.*;
-import kr.baul.server.domain.coupon.usercoupon.UserCoupon;
-import kr.baul.server.domain.coupon.usercoupon.UserCouponReader;
-import kr.baul.server.domain.coupon.usercoupon.UserCouponStore;
+import kr.baul.server.domain.coupon.issuing.CouponFinalizer;
+import kr.baul.server.domain.coupon.issuing.CouponQueueGuard;
+import kr.baul.server.domain.coupon.usercoupon.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -23,55 +24,83 @@ class CouponServiceUnitTest {
     CouponService couponService;
 
     @Mock UserCouponReader userCouponReader;
-    @Mock UserCouponStore userCouponStore;
-    @Mock CouponReader couponReader;
-    @Mock CouponStore couponStore;
+    @Mock CouponFinalizer couponFinalizer;
+    @Mock CouponQueueGuard couponQueueGuard;
     @Mock UserCouponDetailMapper userCouponDetailMapper;
-
-    @Mock CouponStockReader couponStockReader;
-    @Mock CouponStockStore couponStockStore;
 
     @Test
     void 이미_쿠폰을_보유하고_있으면_예외() {
         // given
         Long userId = 1L;
         Long couponId = 100L;
-
-        CouponCommand.IssueCoupon command = CouponCommand.IssueCoupon.builder()
+        var command = CouponCommand.IssueCoupon.builder()
                 .userId(userId)
                 .couponId(couponId)
                 .build();
 
-        CouponStock mockStock = mock(CouponStock.class);
-        when(couponStockReader.getCouponStock(couponId)).thenReturn(mockStock);
-        when(mockStock.getCouponId()).thenReturn(couponId);
-        doThrow(new DuplicateCouponIssueException()).when(userCouponStore).store(couponId, userId);
+        doThrow(new DuplicateCouponIssueException())
+                .when(couponQueueGuard).assertNotIssued(couponId, userId);
 
-        // when&then
+        // when & then
         assertThatThrownBy(() -> couponService.issueCouponToUser(command))
                 .isInstanceOf(DuplicateCouponIssueException.class);
+
+        // then
+        verify(couponQueueGuard).assertNotIssued(couponId, userId);
+        verifyNoMoreInteractions(couponFinalizer);
+        verify(couponQueueGuard, never()).tryEnter(any(), any());
+        verify(couponQueueGuard, never()).freeSlot(any(), any());
+        verify(couponQueueGuard, never()).markIssued(any(), any());
     }
+
 
     @Test
     void 쿠폰을_정상_발급() {
         // given
         Long userId = 1L;
         Long couponId = 100L;
-
-        CouponCommand.IssueCoupon command = CouponCommand.IssueCoupon.builder()
+        var command = CouponCommand.IssueCoupon.builder()
                 .userId(userId)
                 .couponId(couponId)
                 .build();
-
-        CouponStock couponStock = mock(CouponStock.class);
-
-        when(couponStockReader.getCouponStock(couponId)).thenReturn(couponStock);
 
         // when
         couponService.issueCouponToUser(command);
 
         // then
-        // 예외 없으면 성공
+        InOrder inOrder = inOrder(couponQueueGuard, couponFinalizer);
+        inOrder.verify(couponQueueGuard).assertNotIssued(couponId, userId);
+        inOrder.verify(couponQueueGuard).tryEnter(couponId, userId);
+        inOrder.verify(couponFinalizer).finalizeIssue(couponId, userId);
+        inOrder.verify(couponQueueGuard).markIssued(couponId, userId);
+
+        // 보상 호출 없어야 함
+        verify(couponQueueGuard, never()).freeSlot(any(), any());
+    }
+
+    @Test
+    void 최종_확정_실패시_슬롯_복구하고_예외_전파() {
+        // given
+        Long userId = 1L;
+        Long couponId = 100L;
+        var command = CouponCommand.IssueCoupon.builder()
+                .userId(userId)
+                .couponId(couponId)
+                .build();
+
+        doThrow(new OutOfStockException())
+                .when(couponFinalizer).finalizeIssue(couponId, userId);
+
+        // when & then
+        assertThatThrownBy(() -> couponService.issueCouponToUser(command))
+                .isInstanceOf(OutOfStockException.class);
+
+        // then
+        verify(couponQueueGuard).assertNotIssued(couponId, userId);
+        verify(couponQueueGuard).tryEnter(couponId, userId);
+        verify(couponFinalizer).finalizeIssue(couponId, userId);
+        verify(couponQueueGuard).freeSlot(couponId, userId);
+        verify(couponQueueGuard, never()).markIssued(any(), any());
     }
 
     @Test
