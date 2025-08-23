@@ -7,6 +7,9 @@ VALUES (1, 50, NOW());
 INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
 VALUES (1, 1, 0, NOW(), NOW());
 
+INSERT INTO accounts (id, user_id, balance, created_at, updated_at)
+VALUES (999999, 999999, 1000000, NOW(), NOW());
+
 
 -- 쿠폰 1
 INSERT INTO coupon (id, item_id, name, discount_amount, valid_from, valid_to, disabled, issued_at, created_at)
@@ -375,3 +378,28 @@ INSERT INTO order_items (id, order_id, item_id, quantity, item_price_at_order, c
 (2233, 2127, 2002, 1, 2000, NOW(), NOW()),
 (2234, 2128, 2003, 4, 2500, NOW(), NOW()),
 (2235, 2129, 2004, 2, 3000, NOW(), NOW());
+
+
+
+-- 인기상품 조회 상품 데이터
+INSERT INTO items (id, name, price, created_at, updated_at) VALUES
+(2300, 'Item A', 1000, NOW(), NOW()),
+(2301, 'Item B', 1500, NOW(), NOW()),
+(2302, 'Item C', 2000, NOW(), NOW()),
+(2303, 'Item D', 2500, NOW(), NOW()),
+(2304, 'Item E', 3000, NOW(), NOW()),
+(2305, 'Item F', 1200, NOW(), NOW()),
+(2306, 'Item G', 1700, NOW(), NOW()),
+(2307, 'Item H', 2200, NOW(), NOW()),
+(2308, 'Item I', 2700, NOW(), NOW()),
+(2309, 'Item J', 3200, NOW(), NOW()),
+(2310, 'Item K', 1800, NOW(), NOW()),
+(2311, 'Item L', 2300, NOW(), NOW()),
+(2312, 'Item M', 2800, NOW(), NOW()),
+(2313, 'Item N', 3300, NOW(), NOW()),
+(2314, 'Item O', 3800, NOW(), NOW()),
+(2315, 'Item P', 1400, NOW(), NOW()),
+(2316, 'Item Q', 1900, NOW(), NOW()),
+(2317, 'Item R', 2400, NOW(), NOW()),
+(2318, 'Item S', 2900, NOW(), NOW()),
+(2319, 'Item T', 3400, NOW(), NOW());

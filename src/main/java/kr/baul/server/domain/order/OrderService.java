@@ -1,5 +1,6 @@
 package kr.baul.server.domain.order;
 
+import kr.baul.server.domain.item.itemrank.ItemRankingStore;
 import kr.baul.server.domain.order.itemstock.ItemStockProcessor;
 import kr.baul.server.domain.order.orderinfo.OrderInfo;
 import kr.baul.server.domain.order.orderinfo.OrderInfoMapper;
@@ -19,6 +20,7 @@ public class OrderService {
     private final OrderInfoMapper orderInfoMapper;
     private final OrderStore orderStore;
     private final CouponUseProcessor couponUseProcessor;
+    private final ItemRankingStore itemRankingStore;
 
 
     public OrderInfo.Order registerOrder(OrderCommand.RegisterOrder registerOrder){
@@ -48,6 +50,8 @@ public class OrderService {
                     couponUseProcessor.use(item.couponId(), userId, order.getId());
                 }
             }
+
+            itemRankingStore.updateDailyRanking(requestItems);
         }catch (Exception e){
             // 재고 복구
             itemStockProcessor.revertAll(requestItems);

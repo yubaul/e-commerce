@@ -2,6 +2,7 @@ package kr.hhplus.be.server.order;
 
 import kr.baul.server.common.exception.*;
 import kr.baul.server.domain.account.AccountReader;
+import kr.baul.server.domain.item.itemrank.ItemRankingStore;
 import kr.baul.server.domain.order.*;
 import kr.baul.server.domain.order.itemstock.ItemStockProcessor;
 import kr.baul.server.domain.order.orderinfo.OrderInfo;
@@ -43,6 +44,9 @@ class OrderServiceUnitTest {
 
     @Mock
     OrderStore orderStore;
+
+    @Mock
+    ItemRankingStore itemRankingStore;
 
     @Test
     void 주문_등록_성공() {

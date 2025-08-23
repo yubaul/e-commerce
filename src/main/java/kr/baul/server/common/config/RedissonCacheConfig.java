@@ -18,7 +18,7 @@ public class RedissonCacheConfig {
         var topSelling10m = new CacheConfig(Duration.ofMinutes(10).toMillis(), 0);
         return new RedissonSpringCacheManager(
                 redissonClient,
-                Map.of("topSellingItems.v1.10m", topSelling10m)
+                Map.of("topSellingItems.v1", topSelling10m)
         );
     }
 

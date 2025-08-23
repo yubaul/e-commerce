@@ -7,7 +7,6 @@ import kr.baul.server.domain.item.iteminfo.ItemInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -15,7 +14,6 @@ import java.util.List;
 public class ItemReaderImpl implements ItemReader {
 
     private final ItemRepository itemRepository;
-    private final ItemQueryDslRepository queryDslRepository;
 
     @Override
     public Item getItem(Long itemId) {
@@ -25,7 +23,7 @@ public class ItemReaderImpl implements ItemReader {
     }
 
     @Override
-    public List<ItemInfo.TopSelling> getTopSellingItems(LocalDateTime start, LocalDateTime end, int limit) {
-        return queryDslRepository.findTopSellingByPeriod(start, end, limit);
+    public List<Item> getItems(List<Long> itemIds) {
+        return itemRepository.findAllById(itemIds);
     }
 }

@@ -5,7 +5,7 @@ import kr.baul.server.common.exception.DuplicateCouponIssueException;
 import kr.baul.server.common.exception.OutOfStockException;
 import kr.baul.server.domain.coupon.CouponCommand;
 import kr.baul.server.domain.coupon.CouponStock;
-import kr.baul.server.domain.coupon.UserCouponDetail;
+import kr.baul.server.domain.coupon.usercoupon.UserCouponDetail;
 import kr.baul.server.infrastructure.coupon.CouponStockRepository;
 import kr.hhplus.be.server.IntegrationTestBase;
 import org.junit.jupiter.api.Test;
