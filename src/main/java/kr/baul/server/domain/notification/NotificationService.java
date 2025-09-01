@@ -10,8 +10,8 @@ public class NotificationService {
 
     private final OrderEventEmitter orderEventEmitter;
 
-    public void notifyOrderCompleted(OrderInfo.Order orderInfo){
-        orderEventEmitter.orderCompleted(orderInfo);
+    public void notifyOrderCompleted(OrderInfo.OrderCompleted orderCompleted){
+        orderEventEmitter.orderCompleted(orderCompleted);
     }
 
 }

@@ -12,4 +12,5 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface OrderInfoMapper {
     OrderInfo.Order of(Order order);
+    OrderInfo.OrderCompleted of(OrderInfo.Order orderInfo);
 }

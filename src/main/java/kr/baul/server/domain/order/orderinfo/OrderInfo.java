@@ -16,4 +16,13 @@ public class OrderInfo {
 
     }
 
+    @Builder
+    public record OrderCompleted(
+            Long id,
+            Long userId,
+            Long totalAmount
+    ){
+
+    }
+
 }
