@@ -1,8 +1,9 @@
 package kr.baul.server.domain.notification;
 
-import kr.baul.server.domain.order.orderinfo.OrderInfo;
+import kr.baul.server.domain.ouxbox.OutboxEvent;
 
 public interface OrderEventEmitter {
 
-    void orderCompleted(OrderInfo.OrderCompleted orderCompleted);
+    void orderCompleted(OutboxEvent event);
+
 }

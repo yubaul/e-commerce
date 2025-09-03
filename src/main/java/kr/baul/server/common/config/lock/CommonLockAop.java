@@ -1,4 +1,4 @@
-package kr.baul.server.common.config;
+package kr.baul.server.common.config.lock;
 
 import kr.baul.server.common.exception.LockAcquisitionException;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class CommonLockAop {
     private final RedissonClient redissonClient;
     private final LockTransaction lockTransaction;
 
-    @Around("@annotation(kr.baul.server.common.config.CommonLock)")
+    @Around("@annotation(kr.baul.server.common.config.lock.CommonLock)")
     public Object lock(final ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();

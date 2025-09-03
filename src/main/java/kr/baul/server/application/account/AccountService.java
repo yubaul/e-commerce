@@ -2,7 +2,7 @@ package kr.baul.server.application.account;
 
 import static kr.baul.server.domain.account.accounthistory.AccountHistory.*;
 
-import kr.baul.server.common.config.CommonLock;
+import kr.baul.server.common.config.lock.CommonLock;
 import kr.baul.server.domain.account.Account;
 import kr.baul.server.domain.account.AccountCommand;
 import kr.baul.server.domain.account.AccountReader;
@@ -10,7 +10,6 @@ import kr.baul.server.domain.account.AccountStore;
 import kr.baul.server.domain.account.accounthistory.AccountHistoryStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service

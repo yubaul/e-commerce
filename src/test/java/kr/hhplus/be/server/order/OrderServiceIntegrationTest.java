@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.order;
 
+import kr.baul.server.common.constants.KafkaConstant;
 import kr.baul.server.common.exception.*;
 import kr.baul.server.domain.account.Account;
 import kr.baul.server.domain.account.AccountReader;
@@ -10,15 +11,21 @@ import kr.baul.server.domain.order.OrderCommand.RegisterOrder;
 import kr.baul.server.domain.order.OrderCommand.RegisterOrder.OrderItem;
 import kr.baul.server.domain.order.OrderService;
 import kr.baul.server.domain.order.orderinfo.OrderInfo;
+import kr.baul.server.domain.ouxbox.OutboxEventReader;
 import kr.baul.server.infrastructure.coupon.usercoupon.UserCouponRepository;
 import kr.baul.server.infrastructure.item.ItemStockRepository;
+import kr.baul.server.infrastructure.notificatiion.OrderEventOutboxEmitter;
+import kr.baul.server.infrastructure.notificatiion.OrderPaymentKafkaConsumer;
 import kr.baul.server.infrastructure.order.OrderRepository;
+import kr.baul.server.infrastructure.ouxbox.OutboxRelayWorker;
 import kr.hhplus.be.server.IntegrationTestBase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +34,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static kr.baul.server.common.JsonMapper.fromJson;
 import static org.assertj.core.api.Assertions.*;
+import static org.awaitility.Awaitility.await;
+import static org.mockito.ArgumentCaptor.forClass;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
+
 
 @SpringBootTest(
         classes = kr.baul.server.ServerApplication.class,
@@ -45,6 +59,17 @@ public class OrderServiceIntegrationTest extends IntegrationTestBase {
     @Autowired UserCouponRepository userCouponRepository;
 
     @Autowired OrderRepository orderRepository;
+
+
+    @SuppressWarnings("removal")
+    @SpyBean OrderPaymentKafkaConsumer consumer;
+
+    @Autowired OrderEventOutboxEmitter producer;
+
+    @Autowired OutboxRelayWorker relayWorker;
+
+    @Autowired OutboxEventReader outboxEventReader;
+
 
 
     @Test
@@ -75,7 +100,7 @@ public class OrderServiceIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
-    void 주문_등록_실패_사용_중지된_쿠폰_예외() {
+    void 주문완료_이벤트_발행_및_소비_테스트() {
         // given
         Long userId = 11L;
         Long disabledCouponId = 101L;
@@ -377,6 +402,40 @@ public class OrderServiceIntegrationTest extends IntegrationTestBase {
         assertThat(account.getBalance())
                 .as("잔액은 0이어야 함 (1만원 * 3회 차감)")
                 .isEqualTo(0);
+    }
+
+
+
+    @Test
+    void 주문완료_이벤트_Outbox에서_카프카_전송_및_컨슈머_소비_테스트() {
+        // given: 주문 완료 이벤트 생성
+        var event = new OrderInfo.OrderCompleted(9001L, 77L, 15000L);
+
+        // Outbox 테이블에 PENDING 저장
+        producer.orderCompleted(event.toOutboxEventEntity());
+
+        // when: OutboxRelayWorker 실행 (카프카로 발행)
+        relayWorker.replayPending();
+
+        // then: KafkaConsumer가 consume() 실행할 때까지 대기 후 검증
+        var captor = forClass(String.class);
+        await()
+                .atMost(Duration.ofSeconds(10))
+                .untilAsserted(() ->
+                        verify(consumer, atLeastOnce()).consume(captor.capture(), any())
+                );
+
+        // 메시지를 JSON → DTO로 변환 후 값 검증
+        var consumed = fromJson(captor.getValue(), OrderInfo.OrderCompleted.class);
+
+        assertThat(consumed.getId()).isEqualTo(9001L);
+        assertThat(consumed.getUserId()).isEqualTo(77L);
+        assertThat(consumed.getTotalAmount()).isEqualTo(15000L);
+
+        // Outbox 상태가 COMPLETED로 변경되었는지 검증
+        var outbox = outboxEventReader.getOutboxEvent(KafkaConstant.ORDER_PAYMENT, "9001");
+        assertThat(outbox.getStatus())
+                .isEqualTo(kr.baul.server.domain.ouxbox.OutboxEvent.OutboxEventStatus.COMPLETED);
     }
 
 }

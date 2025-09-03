@@ -31,7 +31,7 @@ public class Order extends AbstractEntity {
 
     @Getter
     @RequiredArgsConstructor
-    public static enum OrderStatus{
+    public enum OrderStatus{
         CREATED("주문 생성"),
         PAID("결제 완료"),
         FAILED("주문 실패"),

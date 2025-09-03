@@ -1,6 +1,6 @@
 package kr.baul.server.domain.order.payment;
 
-import kr.baul.server.common.config.CommonLock;
+import kr.baul.server.common.config.lock.CommonLock;
 import kr.baul.server.domain.account.Account;
 import kr.baul.server.domain.account.AccountReader;
 import kr.baul.server.domain.account.accounthistory.AccountHistory;
