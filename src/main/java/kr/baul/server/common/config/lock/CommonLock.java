@@ -1,4 +1,4 @@
-package kr.baul.server.common.config;
+package kr.baul.server.common.config.lock;
 
 
 import java.lang.annotation.ElementType;

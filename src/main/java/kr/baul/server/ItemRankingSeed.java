@@ -71,16 +71,18 @@ public class ItemRankingSeed {
         return LIMIT_BUCKET_KEY + couponId;
     }
 
-    private RBucket<Integer> limitBucket(Long couponId) {
+    private RBucket<String> limitBucket(Long couponId) {
         return redisson.getBucket(kLimit(couponId));
     }
 
     private void seedCouponLimits() {
-        limitBucket(1L).set(2, 3, TimeUnit.MINUTES);
-        limitBucket(200L).set(5, 3, TimeUnit.MINUTES);
-        limitBucket(201L).set(5, 3, TimeUnit.MINUTES);
-        limitBucket(500L).set(30, 3, TimeUnit.MINUTES);
-        limitBucket(501L).set(10, 3, TimeUnit.MINUTES);
-        limitBucket(502L).set(10, 3, TimeUnit.MINUTES);
+        limitBucket(1L).set("2", 3, TimeUnit.MINUTES);
+        limitBucket(200L).set("5", 3, TimeUnit.MINUTES);
+        limitBucket(201L).set("5", 3, TimeUnit.MINUTES);
+        limitBucket(500L).set("30", 3, TimeUnit.MINUTES);
+        limitBucket(501L).set("10", 3, TimeUnit.MINUTES);
+        limitBucket(502L).set("10", 3, TimeUnit.MINUTES);
+
+        redisson.getSet("coupon:issued:200").add("10");
     }
 }

@@ -1,6 +1,6 @@
 package kr.baul.server.domain.order.usercoupon;
 
-import kr.baul.server.common.config.CommonLock;
+import kr.baul.server.common.config.lock.CommonLock;
 import kr.baul.server.domain.coupon.Coupon;
 import kr.baul.server.domain.coupon.CouponReader;
 import kr.baul.server.domain.coupon.usercoupon.UserCoupon;
