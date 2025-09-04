@@ -28,7 +28,7 @@ public class KafkaProducerConfig {
 
         // 직렬화
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
         // 타입 헤더 (Spring ↔ Spring 매핑에 유리). 이기종 소비자면 false 고려
         props.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, true);

@@ -26,4 +26,20 @@ public class KafkaTopicConfig {
                 .build();
     }
 
+    @Bean
+    public NewTopic couponIssueTopic() {
+        return TopicBuilder.name(KafkaConstant.COUPON_ISSUE)
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic couponIssueDlq() {
+        return TopicBuilder.name(KafkaConstant.COUPON_ISSUE + ".DLQ")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+
 }

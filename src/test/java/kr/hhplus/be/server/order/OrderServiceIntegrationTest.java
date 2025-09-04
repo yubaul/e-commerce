@@ -12,10 +12,10 @@ import kr.baul.server.domain.order.OrderCommand.RegisterOrder.OrderItem;
 import kr.baul.server.domain.order.OrderService;
 import kr.baul.server.domain.order.orderinfo.OrderInfo;
 import kr.baul.server.domain.ouxbox.OutboxEventReader;
+import kr.baul.server.domain.ouxbox.OutboxService;
 import kr.baul.server.infrastructure.coupon.usercoupon.UserCouponRepository;
 import kr.baul.server.infrastructure.item.ItemStockRepository;
-import kr.baul.server.infrastructure.notificatiion.OrderEventOutboxEmitter;
-import kr.baul.server.infrastructure.notificatiion.OrderPaymentKafkaConsumer;
+import kr.baul.server.infrastructure.order.OrderPaymentKafkaConsumer;
 import kr.baul.server.infrastructure.order.OrderRepository;
 import kr.baul.server.infrastructure.ouxbox.OutboxRelayWorker;
 import kr.hhplus.be.server.IntegrationTestBase;
@@ -62,9 +62,10 @@ public class OrderServiceIntegrationTest extends IntegrationTestBase {
 
 
     @SuppressWarnings("removal")
-    @SpyBean OrderPaymentKafkaConsumer consumer;
+    @SpyBean
+    OrderPaymentKafkaConsumer orderPaymentKafkaConsumer;
 
-    @Autowired OrderEventOutboxEmitter producer;
+    @Autowired OutboxService outboxService;
 
     @Autowired OutboxRelayWorker relayWorker;
 
@@ -412,7 +413,7 @@ public class OrderServiceIntegrationTest extends IntegrationTestBase {
         var event = new OrderInfo.OrderCompleted(9001L, 77L, 15000L);
 
         // Outbox 테이블에 PENDING 저장
-        producer.orderCompleted(event.toOutboxEventEntity());
+        outboxService.save(event.toOutboxEventEntity());
 
         // when: OutboxRelayWorker 실행 (카프카로 발행)
         relayWorker.replayPending();
@@ -422,7 +423,7 @@ public class OrderServiceIntegrationTest extends IntegrationTestBase {
         await()
                 .atMost(Duration.ofSeconds(10))
                 .untilAsserted(() ->
-                        verify(consumer, atLeastOnce()).consume(captor.capture(), any())
+                        verify(orderPaymentKafkaConsumer, atLeastOnce()).consumeOrderPayment(captor.capture(), any())
                 );
 
         // 메시지를 JSON → DTO로 변환 후 값 검증
