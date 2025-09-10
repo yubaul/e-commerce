@@ -1,6 +1,6 @@
 package kr.baul.server.domain.coupon.issuing;
 
-import kr.baul.server.common.config.CommonLock;
+import kr.baul.server.common.config.lock.CommonLock;
 import kr.baul.server.common.exception.DuplicateCouponIssueException;
 import kr.baul.server.domain.coupon.CouponStock;
 import kr.baul.server.domain.coupon.CouponStockReader;

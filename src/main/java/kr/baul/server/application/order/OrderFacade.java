@@ -1,8 +1,10 @@
 package kr.baul.server.application.order;
 
-import kr.baul.server.domain.notification.NotificationService;
+
 import kr.baul.server.domain.order.OrderCommand;
 import kr.baul.server.domain.order.OrderService;
+import kr.baul.server.domain.order.orderinfo.OrderInfoMapper;
+import kr.baul.server.domain.ouxbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +13,13 @@ import org.springframework.stereotype.Service;
 public class OrderFacade {
 
     private final OrderService orderService;
-    private final NotificationService notificationService;
+    private final OrderInfoMapper orderInfoMapper;
+    private final OutboxService outboxService;
 
     public void registerOrder(OrderCommand.RegisterOrder registerOrder){
         var orderInfo = orderService.registerOrder(registerOrder);
-        notificationService.notifyOrderCompleted(orderInfo);
+        var orderCompleted = orderInfoMapper.of(orderInfo);
+        var outboxEvent = orderCompleted.toOutboxEventEntity();
+        outboxService.save(outboxEvent);
     }
 }

@@ -1,6 +1,6 @@
 package kr.baul.server.domain.order.itemstock;
 
-import kr.baul.server.common.config.CommonLock;
+import kr.baul.server.common.config.lock.CommonLock;
 import kr.baul.server.domain.item.ItemStock;
 import kr.baul.server.domain.item.ItemStockReader;
 import kr.baul.server.domain.item.ItemStockStore;

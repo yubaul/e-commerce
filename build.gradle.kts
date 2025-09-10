@@ -39,6 +39,7 @@ dependencies {
 	implementation("org.springframework.retry:spring-retry:2.0.12")
     implementation("org.redisson:redisson-spring-boot-starter:3.50.0")
     implementation("org.springframework.boot:spring-boot-starter-cache:3.5.3")
+    implementation("org.springframework.kafka:spring-kafka:3.3.8")
 
 	// lombok
 	compileOnly("org.projectlombok:lombok")
@@ -65,6 +66,9 @@ dependencies {
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mysql")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.testcontainers:kafka:1.20.1")
+    testImplementation("org.springframework.kafka:spring-kafka-test")
+    testImplementation("org.awaitility:awaitility:4.2.0")
 }
 
 tasks.withType<Test> {

@@ -111,3 +111,24 @@ CREATE TABLE user_coupon (
 );
 
 ALTER TABLE user_coupon ADD CONSTRAINT uk_user_coupon UNIQUE (user_id, coupon_id);
+
+DROP TABLE IF EXISTS outbox_event;
+CREATE TABLE outbox_event (
+  id             BIGINT PRIMARY KEY AUTO_INCREMENT,
+  topic          VARCHAR(30) NOT NULL,
+  aggregate_id   VARCHAR(50) NOT NULL,
+  type           VARCHAR(50) NOT NULL,
+  payload        MEDIUMTEXT NOT NULL,
+  headers        TEXT NULL,
+  occurred_at    TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  status         VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+  retry_count    INT NOT NULL DEFAULT 0,
+  last_error     TEXT NULL,
+  published_at   TIMESTAMP(3) NULL
+);
+
+
+ALTER TABLE outbox_event
+    ADD CONSTRAINT uk_outbox_topic_agg UNIQUE (topic, aggregate_id),
+    ADD INDEX idx_outbox_status_occurred (status, occurred_at),
+    ADD INDEX idx_outbox_topic_status (topic, status);

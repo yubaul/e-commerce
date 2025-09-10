@@ -1,4 +1,4 @@
-package kr.baul.server.common.config;
+package kr.baul.server.common.config.redis;
 
 import org.redisson.api.RedissonClient;
 import org.redisson.spring.cache.CacheConfig;
