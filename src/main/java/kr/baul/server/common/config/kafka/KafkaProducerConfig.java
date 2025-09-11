@@ -36,13 +36,16 @@ public class KafkaProducerConfig {
         // 신뢰성
         props.put(ProducerConfig.ACKS_CONFIG, "all");
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
-        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
+        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
 
         // 재시도/타임아웃
-        props.put(ProducerConfig.RETRIES_CONFIG, 3);
-        props.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 500);
-        props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30_000);
-        props.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 120_000);
+        props.put(ProducerConfig.RETRIES_CONFIG, Integer.MAX_VALUE);
+        props.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 1000);
+        props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 60_000);
+        props.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 180_000);
+        props.put(ProducerConfig.BATCH_SIZE_CONFIG, 32_768);
+        props.put(ProducerConfig.LINGER_MS_CONFIG, 10);
+        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 67_108_864);
 
         return new DefaultKafkaProducerFactory<>(props);
     }
