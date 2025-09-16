@@ -14,21 +14,21 @@ public class OutboxService {
     private final OutboxEventStore outboxEventStore;
     private final ApplicationEventPublisher publisher;
 
-    @CommonLock(key = "outbox", ids = {"#topic", "#eventId"})
+    @CommonLock(key = "outbox", ids = {"#topic", "#aggregateId"})
     public void markPublished(String topic, String aggregateId) {
         OutboxEvent event = outboxEventReader.getOutboxEvent(topic, aggregateId);
         event.markPublished();
         outboxEventStore.store(event);
     }
 
-    @CommonLock(key = "outbox", ids = {"#topic", "#eventId"})
+    @CommonLock(key = "outbox", ids = {"#topic", "#aggregateId"})
     public void markFailed(String topic, String aggregateId, String error) {
         OutboxEvent event = outboxEventReader.getOutboxEvent(topic, aggregateId);
         event.markFailed(error);
         outboxEventStore.store(event);
     }
 
-    @CommonLock(key = "outbox", ids = {"#topic", "#eventId"})
+    @CommonLock(key = "outbox", ids = {"#topic", "#aggregateId"})
     public void markCompleted(String topic, String aggregateId) {
         OutboxEvent event = outboxEventReader.getOutboxEvent(topic, aggregateId);
         event.markCompleted();
